@@ -1,0 +1,1 @@
+<!-- | Ancient            | ~500 BCE         | Harmonic Ratio                | Understand pitch via math/geometric ratios | Pythagoras                | Greece              | [Harmonic series](https://en.wikipedia.org/wiki/Harmonic_series_(music)) | -->
