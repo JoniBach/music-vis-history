@@ -1,3 +1,9 @@
+<script lang="ts">
+	import Timeline from '$lib/components/Timeline.svelte';
+
+	const { children } = $props();
+</script>
+
 <!-- | Era                | Year Range       | Visualisation Name            | Purpose                                    | Creator(s)                | Place of Origin     | Wikipedia Link |
 |--------------------|------------------|-------------------------------|--------------------------------------------|---------------------------|---------------------|----------------|
 | Ancient            | ~500 BCE         | Harmonic Ratio                | Understand pitch via math/geometric ratios | Pythagoras                | Greece              | [Harmonic series](https://en.wikipedia.org/wiki/Harmonic_series_(music)) |
@@ -10,3 +16,7 @@
 | Electronic         | ~1950s–present   | Spectrograms / Oscilloscopes  | Visualise frequency/timbre over time       | Bell Labs, others         | USA                 | [Spectrogram](https://en.wikipedia.org/wiki/Spectrogram) |
 | Digital            | ~1980s–present   | Piano Roll (DAW)              | Digitally sequence music via grid          | MIDI software developers  | Global              | [Piano roll](https://en.wikipedia.org/wiki/Piano_roll) |
 | AI/ML Era          | ~2015–present    | AI/ML Feature Maps            | Cluster genres/timbres via data            | Spotify, Google, academia | Global              | [Music information retrieval](https://en.wikipedia.org/wiki/Music_information_retrieval) | -->
+x
+<Timeline />
+
+{@render children()}

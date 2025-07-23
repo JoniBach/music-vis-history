@@ -1,0 +1,298 @@
+[
+    {
+        "era": "Ancient/Early",
+        "startYear": -800,
+        "endYear": 500,
+        "description": "Prehistoric and early historical vocal/instrumental music rooted in ritual and oral traditions.",
+        "artists": [
+            {
+                "name": "Enheduanna",
+                "origin": "Ancient Sumer (Ur, modern Iraq)",
+                "wiki": "https://en.wikipedia.org/wiki/Enheduanna"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Ancient_music"
+    },
+    {
+        "era": "Medieval",
+        "startYear": 500,
+        "endYear": 1400,
+        "description": "Development of musical notation, chant, and early polyphony.",
+        "artists": [
+            {
+                "name": "Hildegard of Bingen",
+                "origin": "Holy Roman Empire (modern Germany)",
+                "wiki": "https://en.wikipedia.org/wiki/Hildegard_of_Bingen"
+            },
+            {
+                "name": "Léonin",
+                "origin": "Notre-Dame school, Paris (France)",
+                "wiki": "https://en.wikipedia.org/wiki/L%C3%A9onin"
+            },
+            {
+                "name": "Pérotin",
+                "origin": "Notre-Dame school, Paris (France)",
+                "wiki": "https://en.wikipedia.org/wiki/P%C3%A9rotin"
+            },
+            {
+                "name": "Guillaume Dufay",
+                "origin": "Burgundy (modern France/Belgium)",
+                "wiki": "https://en.wikipedia.org/wiki/Guillaume_Dufay"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Medieval_music"
+    },
+    {
+        "era": "Renaissance",
+        "startYear": 1400,
+        "endYear": 1600,
+        "description": "Flourishing of polyphony & printed music; balance of sacred and secular traditions.",
+        "artists": [
+            {
+                "name": "Josquin des Prez",
+                "origin": "Franco–Flemish region (modern Belgium/France)",
+                "wiki": "https://en.wikipedia.org/wiki/Josquin_des_Prez"
+            },
+            {
+                "name": "Giovanni Pierluigi da Palestrina",
+                "origin": "Rome, Italy",
+                "wiki": "https://en.wikipedia.org/wiki/Giovanni_Pierluigi_da_Palestrina"
+            },
+            {
+                "name": "Claudio Monteverdi",
+                "origin": "Cremona, Italy",
+                "wiki": "https://en.wikipedia.org/wiki/Claudio_Monteverdi"
+            },
+            {
+                "name": "Thomas Tallis",
+                "origin": "England",
+                "wiki": "https://en.wikipedia.org/wiki/Thomas_Tallis"
+            },
+            {
+                "name": "William Byrd",
+                "origin": "England",
+                "wiki": "https://en.wikipedia.org/wiki/William_Byrd"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Renaissance_music"
+    },
+    {
+        "era": "Baroque",
+        "startYear": 1600,
+        "endYear": 1750,
+        "description": "Expressive, contrapuntal style; birth of opera, concerto, sonata, and orchestral forms.",
+        "artists": [
+            {
+                "name": "Johann Sebastian Bach",
+                "origin": "Germany",
+                "wiki": "https://en.wikipedia.org/wiki/Johann_Sebastian_Bach"
+            },
+            {
+                "name": "George Frideric Handel",
+                "origin": "Germany/England",
+                "wiki": "https://en.wikipedia.org/wiki/George_Frideric_Handel"
+            },
+            {
+                "name": "Antonio Vivaldi",
+                "origin": "Italy (Venice)",
+                "wiki": "https://en.wikipedia.org/wiki/Antonio_Vivaldi"
+            },
+            {
+                "name": "Henry Purcell",
+                "origin": "England",
+                "wiki": "https://en.wikipedia.org/wiki/Henry_Purcell"
+            },
+            {
+                "name": "Georg Philipp Telemann",
+                "origin": "Germany",
+                "wiki": "https://en.wikipedia.org/wiki/Georg_Philipp_Telemann"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Baroque_music"
+    },
+    {
+        "era": "Classical",
+        "startYear": 1750,
+        "endYear": 1820,
+        "description": "Clarity, balanced structures (sonata‐allegro, symphonies, quartets); piano rises.",
+        "artists": [
+            {
+                "name": "Joseph Haydn",
+                "origin": "Austria",
+                "wiki": "https://en.wikipedia.org/wiki/Joseph_Haydn"
+            },
+            {
+                "name": "Wolfgang Amadeus Mozart",
+                "origin": "Austria",
+                "wiki": "https://en.wikipedia.org/wiki/Wolfgang_Amadeus_Mozart"
+            },
+            {
+                "name": "Ludwig van Beethoven",
+                "origin": "Germany",
+                "wiki": "https://en.wikipedia.org/wiki/Ludwig_van_Beethoven"
+            },
+            {
+                "name": "Franz Schubert",
+                "origin": "Austria",
+                "wiki": "https://en.wikipedia.org/wiki/Franz_Schubert"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Classical_period_(music)"
+    },
+    {
+        "era": "Romantic",
+        "startYear": 1800,
+        "endYear": 1910,
+        "description": "Emotion-driven, nationalistic, expanded orchestration; program music emerges.",
+        "artists": [
+            {
+                "name": "Frédéric Chopin",
+                "origin": "Poland/France",
+                "wiki": "https://en.wikipedia.org/wiki/Fr%C3%A9d%C3%A9ric_Chopin"
+            },
+            {
+                "name": "Robert Schumann",
+                "origin": "Germany",
+                "wiki": "https://en.wikipedia.org/wiki/Robert_Schumann"
+            },
+            {
+                "name": "Johannes Brahms",
+                "origin": "Germany",
+                "wiki": "https://en.wikipedia.org/wiki/Johannes_Brahms"
+            },
+            {
+                "name": "Pyotr Ilyich Tchaikovsky",
+                "origin": "Russia",
+                "wiki": "https://en.wikipedia.org/wiki/Pyotr_Ilyich_Tchaikovsky"
+            },
+            {
+                "name": "Franz Liszt",
+                "origin": "Hungary",
+                "wiki": "https://en.wikipedia.org/wiki/Franz_Liszt"
+            },
+            {
+                "name": "Richard Wagner",
+                "origin": "Germany",
+                "wiki": "https://en.wikipedia.org/wiki/Richard_Wagner"
+            },
+            {
+                "name": "Hector Berlioz",
+                "origin": "France",
+                "wiki": "https://en.wikipedia.org/wiki/Hector_Berlioz"
+            },
+            {
+                "name": "Gustav Mahler",
+                "origin": "Austria",
+                "wiki": "https://en.wikipedia.org/wiki/Gustav_Mahler"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Romantic_music"
+    },
+    {
+        "era": "20th‑Century/Modernist",
+        "startYear": 1890,
+        "endYear": 1975,
+        "description": "Breakdown of tonality and form—Impressionism, Expressionism, Serialism, Neoclassicism.",
+        "artists": [
+            {
+                "name": "Igor Stravinsky",
+                "origin": "Russia/France/USA",
+                "wiki": "https://en.wikipedia.org/wiki/Igor_Stravinsky"
+            },
+            {
+                "name": "Arnold Schoenberg",
+                "origin": "Austria/USA",
+                "wiki": "https://en.wikipedia.org/wiki/Arnold_Schoenberg"
+            },
+            {
+                "name": "Claude Debussy",
+                "origin": "France",
+                "wiki": "https://en.wikipedia.org/wiki/Claude_Debussy"
+            },
+            {
+                "name": "Béla Bartók",
+                "origin": "Hungary",
+                "wiki": "https://en.wikipedia.org/wiki/B%C3%A9la_Bart%C3%B3k"
+            },
+            {
+                "name": "Dmitri Shostakovich",
+                "origin": "Russia",
+                "wiki": "https://en.wikipedia.org/wiki/Dmitri_Shostakovich"
+            },
+            {
+                "name": "Aaron Copland",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/Aaron_Copland"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/20th-century_classical_music"
+    },
+    {
+        "era": "Postmodern/Contemporary",
+        "startYear": 1975,
+        "endYear": 2000,
+        "description": "Eclectic mixing, minimalism, electronics, spectralism, and post-serial experimentation.",
+        "artists": [
+            {
+                "name": "Philip Glass",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/Philip_Glass"
+            },
+            {
+                "name": "Steve Reich",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/Steve_Reich"
+            },
+            {
+                "name": "John Cage",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/John_Cage"
+            },
+            {
+                "name": "John Adams",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/John_Adams_(composer)"
+            },
+            {
+                "name": "György Ligeti",
+                "origin": "Hungary/Austria",
+                "wiki": "https://en.wikipedia.org/wiki/Gy%C3%B6rgy_Ligeti"
+            },
+            {
+                "name": "Arvo Pärt",
+                "origin": "Estonia",
+                "wiki": "https://en.wikipedia.org/wiki/Arvo_P%C3%A4rt"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Postmodern_music"
+    },
+    {
+        "era": "21st‑Century/Current",
+        "startYear": 2000,
+        "endYear": null,
+        "description": "Global pluralism: multimedia, film scoring, digital and crossover innovations.",
+        "artists": [
+            {
+                "name": "John Williams",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/John_Williams"
+            },
+            {
+                "name": "Jennifer Higdon",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/Jennifer_Higdon"
+            },
+            {
+                "name": "Missy Mazzoli",
+                "origin": "USA",
+                "wiki": "https://en.wikipedia.org/wiki/Missy_Mazzoli"
+            },
+            {
+                "name": "Max Richter",
+                "origin": "Germany/UK",
+                "wiki": "https://en.wikipedia.org/wiki/Max_Richter"
+            }
+        ],
+        "wiki": "https://en.wikipedia.org/wiki/Contemporary_classical_music"
+    }
+]

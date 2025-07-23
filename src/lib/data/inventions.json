@@ -1,0 +1,92 @@
+[
+    {
+        "date": "c. 500 BCE",
+        "innovation": "Harmonic Ratio",
+        "description": "Understanding pitch through numerical ratios (octave 2:1, fifth 3:2)",
+        "innovator": "Pythagoras",
+        "location": "Greece",
+        "link": "https://en.wikipedia.org/wiki/Harmonic_series_(music)",
+        "id": "harmonic-ratio"
+    },
+    {
+        "date": "c. 800–c. 1100 CE",
+        "innovation": "Neumes",
+        "description": "Early pitch/melodic contour notation used in chant manuscripts",
+        "innovator": "Anonymous (monastic scribes)",
+        "location": "Western Europe",
+        "link": "https://en.wikipedia.org/wiki/Neume",
+        "id": "neumes"
+    },
+    {
+        "date": "c. 1025 CE",
+        "innovation": "Staff Notation",
+        "description": "Fixed-line system to precisely indicate pitch",
+        "innovator": "Guido of Arezzo",
+        "location": "Italy",
+        "link": "https://en.wikipedia.org/wiki/Guido_of_Arezzo",
+        "id": "staff-notation"
+    },
+    {
+        "date": "c. 1600–1750",
+        "innovation": "Figured Bass (Thoroughbass)",
+        "description": "Symbols above bass line indicating harmonic progression",
+        "innovator": "Baroque composers/theorists",
+        "location": "Italy, Germany",
+        "link": "https://en.wikipedia.org/wiki/Figured_bass",
+        "id": "figured-bass"
+    },
+    {
+        "date": "1677–1728",
+        "innovation": "Circle of Fifths",
+        "description": "Circle mapping key relationships via fifths",
+        "innovator": "Nikolay Diletsky, J. D. Heinichen",
+        "location": "Russia, Germany",
+        "link": "https://en.wikipedia.org/wiki/Circle_of_fifths",
+        "id": "circle-of-fifths"
+    },
+    {
+        "date": "1739–late 19th century",
+        "innovation": "Tonnetz (Tone Network)",
+        "description": "2D lattice showing harmonic proximity",
+        "innovator": "Leonhard Euler (1739), Hugo Riemann (late 1800s)",
+        "location": "Switzerland, Germany",
+        "link": "https://en.wikipedia.org/wiki/Tonnetz",
+        "id": "tonnetz"
+    },
+    {
+        "date": "1895–1930s",
+        "innovation": "Player Piano Rolls",
+        "description": "Pneumatic playback system using perforated paper rolls",
+        "innovator": "Edwin S. Votey, Aeolian Co",
+        "location": "USA, Germany",
+        "link": "https://en.wikipedia.org/wiki/Player_piano",
+        "id": "player-piano-roll"
+    },
+    {
+        "date": "1950s–present",
+        "innovation": "Spectrogram/Oscilloscope",
+        "description": "Time-frequency visualisation of sound signals",
+        "innovator": "Bell Labs and others",
+        "location": "USA",
+        "link": "https://en.wikipedia.org/wiki/Spectrogram",
+        "id": "spectrogram"
+    },
+    {
+        "date": "1985–present",
+        "innovation": "DAW Piano Roll",
+        "description": "Sequencing musical data visually in grid form",
+        "innovator": "MIDI/developers of Cubase and similar software",
+        "location": "Global",
+        "link": "https://en.wikipedia.org/wiki/Piano_roll",
+        "id": "piano-roll-daw"
+    },
+    {
+        "date": "2015–present",
+        "innovation": "AI-based Feature Maps",
+        "description": "Clustering music genres/timbres using data-driven algorithms",
+        "innovator": "Google, Spotify, academic labs",
+        "location": "Global",
+        "link": "https://en.wikipedia.org/wiki/Music_information_retrieval",
+        "id": "ai"
+    }
+]
