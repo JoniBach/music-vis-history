@@ -16,7 +16,6 @@
 | Electronic         | ~1950s–present   | Spectrograms / Oscilloscopes  | Visualise frequency/timbre over time       | Bell Labs, others         | USA                 | [Spectrogram](https://en.wikipedia.org/wiki/Spectrogram) |
 | Digital            | ~1980s–present   | Piano Roll (DAW)              | Digitally sequence music via grid          | MIDI software developers  | Global              | [Piano roll](https://en.wikipedia.org/wiki/Piano_roll) |
 | AI/ML Era          | ~2015–present    | AI/ML Feature Maps            | Cluster genres/timbres via data            | Spotify, Google, academia | Global              | [Music information retrieval](https://en.wikipedia.org/wiki/Music_information_retrieval) | -->
-x
 <Timeline />
 
 {@render children()}
