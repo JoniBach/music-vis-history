@@ -36,15 +36,6 @@
         "id": "figured-bass"
     },
     {
-        "date": "1677–1728",
-        "innovation": "Circle of Fifths",
-        "description": "Circle mapping key relationships via fifths",
-        "innovator": "Nikolay Diletsky, J. D. Heinichen",
-        "location": "Russia, Germany",
-        "link": "https://en.wikipedia.org/wiki/Circle_of_fifths",
-        "id": "circle-of-fifths"
-    },
-    {
         "date": "1739–late 19th century",
         "innovation": "Tonnetz (Tone Network)",
         "description": "2D lattice showing harmonic proximity",
@@ -61,24 +52,6 @@
         "location": "USA, Germany",
         "link": "https://en.wikipedia.org/wiki/Player_piano",
         "id": "player-piano-roll"
-    },
-    {
-        "date": "1950s–present",
-        "innovation": "Spectrogram/Oscilloscope",
-        "description": "Time-frequency visualisation of sound signals",
-        "innovator": "Bell Labs and others",
-        "location": "USA",
-        "link": "https://en.wikipedia.org/wiki/Spectrogram",
-        "id": "spectrogram"
-    },
-    {
-        "date": "1985–present",
-        "innovation": "DAW Piano Roll",
-        "description": "Sequencing musical data visually in grid form",
-        "innovator": "MIDI/developers of Cubase and similar software",
-        "location": "Global",
-        "link": "https://en.wikipedia.org/wiki/Piano_roll",
-        "id": "piano-roll-daw"
     },
     {
         "date": "2015–present",
