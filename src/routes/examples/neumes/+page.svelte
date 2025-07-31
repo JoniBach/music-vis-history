@@ -143,10 +143,10 @@
 		notes={medievalNotes}
 		{data}
 		staff="chantStaff"
-		variant=""
+		variant="dual"
 	/>
 	<!-- variant="single"
-		variant="double" -->
+		variant="dual" -->
 
 	<Documentation {data} defaultFilter="medieval" {searchSuggestions} />
 {/if}

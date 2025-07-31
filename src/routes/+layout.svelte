@@ -15,7 +15,6 @@
 
 	:global(.smuFL) {
 		font-family: 'Bravura';
-		font-size: 70px; /* Adjust size for visibility */
 	}
 
 	:global(body) {

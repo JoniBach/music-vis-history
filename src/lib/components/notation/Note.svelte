@@ -25,11 +25,15 @@
 		};
 	};
 
+	export let thoroughbass: boolean = false;
+	export let isBass: boolean = false;
 	export let note: NoteType;
 	export let staff: string;
 	export let data: SMUFLData | null = null;
 	export let fontSize: number = 70; // Default font size in px
 	export let variant: string;
+	export let hideNoteName: boolean = false;
+	export let transpose: number = 0;
 
 	const STAFF_LINE_SPACING_RATIO = 9 / 70; // Original spacing (9px) / Original font size (70px)
 	const STEM_REQUIRING_DURATIONS = ['Half', 'Quarter', '8th', '16th', '32nd', '64th'];
@@ -250,7 +254,8 @@
 
 	// Calculate y position from pitch if not provided, or use pitch from y if pitch not provided
 	$: yPosition =
-		note.y !== undefined ? note.y : note.pitch ? deriveVerticalPositionFromPitch(note.pitch) : 0;
+		(note.y !== undefined ? note.y : note.pitch ? deriveVerticalPositionFromPitch(note.pitch) : 0) +
+		(note.type === 'note' ? transpose : 0);
 	// Calculate vertical position in pixels based on dynamic font size
 	$: verticalPixelOffset = -yPosition * staffLineSpacing;
 	$: glyphName = buildGlyphName(note.type, note.duration, yPosition);
@@ -258,9 +263,14 @@
 	// Calculate pitch from y if not provided
 	$: displayPitch =
 		note.pitch || (note.y !== undefined ? derivePitchInformation(note.y).pitch : '');
-	$: console.log(derivePitchInformation(note.y).pitch);
 
 	$: normalVariant = variant !== 'single' && variant !== 'dual';
+
+	$: isBassNote = yPosition > 9;
+
+	$: hideNote = note.type === 'note' && thoroughbass && isBass && isBassNote;
+
+	// $: isBass && console.log(note.pitch, yPosition, isBassNote);
 </script>
 
 <div class="stave-note">
@@ -289,7 +299,7 @@
 			{/if}
 
 			{#if note.type === 'note'}
-				<div class="note" style="top: {verticalPixelOffset}px">
+				<div class="note {hideNote ? 'hide' : ''}" style="top: {verticalPixelOffset}px">
 					{@html createHtmlEntityForGlyph(glyphName)}
 				</div>
 			{/if}
@@ -332,20 +342,20 @@
 			{#if ledgerLineDetails.showUpper && note.type === 'note'}
 				{#each Array.from({ length: ledgerLineDetails.upperCount }) as _index, index}
 					<div
-						class="ledger-line upper noselect"
+						class="ledger-line upper noselect {hideNote ? 'hide' : ''}"
 						style="top: {staffLineSpacing * -(index + 0.5) * 2}px"
 					>
 						{@html createHtmlEntityForGlyph('staff1Line')}
 					</div>
 				{/each}
 			{/if}
-			{#if note.type === 'note'}
+			{#if note.type === 'note' && !hideNoteName}
 				<div class="note-name">
 					{displayPitch}
 				</div>
 			{/if}
 
-			{#if note.lyric?.length > 0}
+			{#if note.lyric?.length > 0 && !hideNoteName}
 				<div class="note-lyric">
 					{note.lyric}
 				</div>
@@ -355,11 +365,7 @@
 
 	{#if !data?.ranges?.beamedGroupsOfNotes?.glyphs?.includes(note.note)}
 		<div class="gap noselect">
-			<div
-				style="visibility: {data?.ranges?.normal?.glyphs?.includes(note.note)
-					? 'visible'
-					: 'hidden'}"
-			>
+			<div style="visibility: {normalVariant ? 'visible' : 'hidden'}">
 				{@html createHtmlEntityForGlyph(staff + 'Narrow')}
 			</div>
 		</div>
@@ -370,6 +376,10 @@
 	.stave-note {
 		display: flex;
 		flex-direction: row;
+	}
+
+	.hide {
+		display: none;
 	}
 
 	.note-wrapper {

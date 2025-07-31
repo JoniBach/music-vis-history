@@ -15,6 +15,7 @@
 	export let title: string;
 	export let subtitle: string;
 	export let variant: string;
+	export let thoroughbass: boolean = false;
 	export let data: {
 		ranges: Record<
 			string,
@@ -27,6 +28,8 @@
 			glyphAdvanceWidths?: Record<string, number>;
 		};
 	} | null = null;
+
+	export let transpose: number = 0;
 </script>
 
 <div class="sheet-music">
@@ -36,7 +39,21 @@
 	</div>
 	<div class="smuFL score" style="font-size: {fontSize}px;">
 		{#each notes as note}
-			<Note {note} {data} {staff} {fontSize} {variant} />
+			<div class="stave-note">
+				<Note
+					{note}
+					{data}
+					{staff}
+					{fontSize}
+					{variant}
+					hideNoteName={thoroughbass}
+					{thoroughbass}
+					isBass={false}
+				/>
+				{#if thoroughbass}
+					<Note {note} {data} {staff} {fontSize} {variant} transpose={12} {thoroughbass} isBass />
+				{/if}
+			</div>
 		{/each}
 	</div>
 </div>
