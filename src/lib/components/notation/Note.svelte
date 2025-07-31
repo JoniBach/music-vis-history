@@ -267,10 +267,12 @@
 	$: normalVariant = variant !== 'single' && variant !== 'dual';
 
 	$: isBassNote = yPosition > 9;
+	$: isTrebleNote = yPosition < -2;
 
-	$: hideNote = note.type === 'note' && thoroughbass && isBass && isBassNote;
+	$: hideNote =
+		note.type === 'note' && thoroughbass && ((isBass && isBassNote) || (!isBass && isTrebleNote));
 
-	// $: isBass && console.log(note.pitch, yPosition, isBassNote);
+	// $: console.log(note.pitch, yPosition, isBass ? 'bass' : 'treble', hideNote);
 </script>
 
 <div class="stave-note">
@@ -331,7 +333,7 @@
 			{#if ledgerLineDetails.showLower && note.type === 'note'}
 				{#each Array.from({ length: ledgerLineDetails.lowerCount }) as _index, index}
 					<div
-						class="ledger-line lower noselect"
+						class="ledger-line lower noselect {hideNote ? 'hide' : ''}"
 						style="top: {staffLineSpacing * (index + 0.5) * 2}px"
 					>
 						{@html createHtmlEntityForGlyph('staff1Line')}
