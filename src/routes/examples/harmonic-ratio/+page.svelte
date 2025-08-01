@@ -139,13 +139,65 @@
 
 <div class="content">
 	<h1>The Harmonic Series</h1>
+	<h4>In music, every note we hear is not a single, pure tone</h4>
 	<p>
-		The harmonic series is a fundamental concept in music and physics. When a string vibrates, it
-		doesn't just produce one frequency but a whole series of frequencies called harmonics or
-		overtones. The first harmonic is the fundamental frequency, and each subsequent harmonic is an
-		integer multiple of the fundamental. Click on each string to see it vibrate and hear the
-		corresponding tone.
+		It’s a blend of many tones stacked together in a precise mathematical pattern. This natural
+		pattern is called the
+		<strong>harmonic series</strong>, and it appears anywhere something vibrates: a plucked guitar
+		string, a struck piano string, a singer’s vocal cords, even a column of air in a flute.
 	</p>
+
+	<p>
+		When a string (or air column) vibrates, the <em>whole</em> length produces the
+		<strong>fundamental frequency</strong>, but at the same time it can also vibrate in halves,
+		thirds, quarters, and so on. These faster vibrations create higher-pitched tones called
+		<strong>harmonics</strong> or <strong>overtones</strong>. Each harmonic’s frequency is a whole
+		number multiple of the fundamental: 2×, 3×, 4×, etc.
+	</p>
+	<h4>It's not just a quirk of physics</h4>
+	<p>
+		It’s the very foundation of harmony, tuning, and the character of musical sound. Musical
+		intervals like the octave, fifth, and major third all appear naturally in the first few
+		harmonics. Without the harmonic series, our sense of consonance and dissonance—and our modern
+		scale systems—would not exist.
+	</p>
+	<h4>The harmonic series is naturally occuring</h4>
+	<p>
+		If forms a blueprint for musical harmony. <b>Long before written notation</b>, humans were
+		singing and building instruments that unconsciously followed its ratios. Over centuries,
+		musicians formalized these sounds into scales, chords, and tuning systems—the DNA of music as we
+		know it today.
+	</p>
+
+	<!-- Brief Historical Timeline -->
+	<h4>The history of the harmonic series predates written music</h4>
+
+	<ul class="timeline">
+		<li>
+			<strong>~2000 BCE – Ancient Mesopotamia & China:</strong> Early lyres, flutes, and zithers already
+			produce notes aligned with harmonic ratios, though the physics is not yet understood.
+		</li>
+		<li>
+			<strong>6th century BCE – Pythagoras (Greece):</strong> Discovers that musical intervals can be
+			expressed as simple ratios of whole numbers (2:1, 3:2, 4:3) by experimenting with vibrating strings.
+		</li>
+		<li>
+			<strong>4th century BCE – Aristotle & Aristoxenus:</strong> Debate the balance between mathematics
+			and perception in music theory.
+		</li>
+		<li>
+			<strong>Medieval Europe:</strong> Monks and scholars develop early tuning systems based on Pythagorean
+			ratios to create consonant harmony in chant and early polyphony.
+		</li>
+		<li>
+			<strong>17th–18th centuries:</strong> Advancements in acoustics (Mersenne, Sauveur) explain the
+			harmonic series scientifically; influences modern tuning systems.
+		</li>
+		<li>
+			<strong>Modern Era:</strong> Harmonic analysis underpins everything from orchestration to synthesizer
+			design, film scoring, and digital audio synthesis.
+		</li>
+	</ul>
 
 	<HarmonicRatio
 		series={seriesData}
@@ -158,16 +210,19 @@
 		on:slidersvisibility={handleSlidersVisibility}
 	/>
 
-	<h2>Exploring Individual Harmonics</h2>
+	<h2>Listening to the Harmonics</h2>
 	<p>
-		Here are some key harmonics, shown alongside the fundamental. Click each to hear how they sound
-		and see how their vibrations relate.
+		Click the examples below to hear individual harmonics and see how their vibrations align with
+		the fundamental. You’ll notice how some blend easily (consonance) and others sound more complex
+		or tense (dissonance).
 	</p>
 
 	<div class="harmonic-block">
 		<p>
-			<strong>n=2 (Octave – 2:1)</strong><br />
-			Exactly double the fundamental frequency. The simplest and purest harmony.
+			<strong>n=2 – Octave (2:1)</strong>
+		</p>
+		<p>
+			Frequencies match every other wave cycle.
 		</p>
 		<HarmonicRatio
 			series={[harmonic1, harmonic2]}
@@ -180,8 +235,17 @@
 
 	<div class="harmonic-block">
 		<p>
-			<strong>n=3 (Perfect Fifth – 3:2)</strong><br />
-			A rich, stable consonance. Notice how the waves align every third cycle.
+		<strong>n=3 – Perfect Fifth (3:2)</strong> - Rich and resonant.
+		</p>
+		<p>
+			The cycles of the fifth align <b>every third beat</b> of the fundamental, creating a
+			balanced, stable harmony. This interval is so foundational that it’s been used in tuning systems
+			since ancient Greece and China.
+		</p>
+		<p>
+			The perfect fifth is the backbone of the <em>circle of fifths</em>,
+			chord progressions, and string tuning (like the violin family). Its clarity and strength make it
+			a cornerstone of both melody and harmony.
 		</p>
 		<HarmonicRatio
 			series={[harmonic1, harmonic3]}
@@ -191,11 +255,15 @@
 			on:playallstop={handlePlayAllStop}
 		/>
 	</div>
-
+	
 	<div class="harmonic-block">
 		<p>
-			<strong>n=4 (Two Octaves – 4:1)</strong><br />
-			Another perfectly pure interval — the wave cycles match even more closely.
+			<strong>n=4 – Double Octave (4:1)</strong><br />
+			Even more tightly aligned than the octave—pure repetition at double speed. This is essentially
+			the same note as the fundamental, only higher in pitch. It’s used universally across cultures
+			to give melodies lift, power, and clarity. Choirs often sing in octaves, and instrumentalists
+			exploit them for emphasis and brightness. The double octave reinforces the fundamental so
+			strongly that it becomes nearly indistinguishable in harmonic identity—pure sonic reinforcement.
 		</p>
 		<HarmonicRatio
 			series={[harmonic1, harmonic4]}
@@ -205,11 +273,21 @@
 			on:playallstop={handlePlayAllStop}
 		/>
 	</div>
-
+	
 	<div class="harmonic-block">
 		<p>
-			<strong>n=5 (Major Third – 5:4)</strong><br />
-			A sweet, uplifting consonance often found in major chords.
+			<strong>n=5 – Major Third (5:4)</strong> - Bright and uplifting<br />
+
+		</p>
+		<p>
+			The major third defines the difference between a major and minor chord.
+			Without it, harmony feels ambiguous; with it, music gains a clear emotional direction. The major
+			third emerges naturally in the harmonic series but is slightly different from the one in modern
+			equal temperament tuning.
+		</p>
+		<p>
+			Barbershop singers and early organ builders exploited its pure ratio to
+			create shimmering, beatless consonance that modern instruments only approximate.
 		</p>
 		<HarmonicRatio
 			series={[harmonic1, harmonic5]}
@@ -219,11 +297,19 @@
 			on:playallstop={handlePlayAllStop}
 		/>
 	</div>
-
+	
 	<div class="harmonic-block">
+		<p><strong>n=7 – Natural Minor Seventh (7:4)</strong> - Warm and expressive, with a slightly “bluesy” flavor.</p>
 		<p>
-			<strong>n=7 (~Minor Seventh – 7:4)</strong><br />
-			Not part of standard Western tuning, but has a bluesy, earthy quality.
+			
+			 This seventh doesn’t appear in our modern
+			equal-tempered scale, but singers and traditional musicians around the world—from African
+			folk music to Appalachian ballads—use it naturally. In the harmonic series, it’s slightly lower
+			than the tempered minor seventh, giving it a distinctive, soulful pull toward resolution.
+			
+		</p>
+		<p>
+			Composers and improvisers use it to evoke rawness and authenticity.
 		</p>
 		<HarmonicRatio
 			series={[harmonic1, harmonic7]}
@@ -233,46 +319,36 @@
 			on:playallstop={handlePlayAllStop}
 		/>
 	</div>
-
-	<h2>Harmonic Relationships</h2>
-	<p>We can also compare harmonics with each other to see and hear intervals.</p>
-
-	<div class="harmonic-block">
-		<p><strong>n=2 &amp; n=3 (Perfect Fifth – 3:2)</strong></p>
-		<HarmonicRatio
-			series={[harmonic2, harmonic3]}
-			on:noteon={handleNoteOn}
-			on:noteoff={handleNoteOff}
-			on:playallstart={handlePlayAllStart}
-			on:playallstop={handlePlayAllStop}
-		/>
-	</div>
-
-	<div class="harmonic-block">
-		<p><strong>n=3 &amp; n=4 (Perfect Fourth – 4:3)</strong></p>
-		<HarmonicRatio
-			series={[harmonic3, harmonic4]}
-			on:noteon={handleNoteOn}
-			on:noteoff={handleNoteOff}
-			on:playallstart={handlePlayAllStart}
-			on:playallstop={handlePlayAllStop}
-		/>
-	</div>
-
-	<style>
-		.harmonic-block {
-			margin: 1.5rem 0;
-		}
-		.harmonic-block p {
-			margin-bottom: 0.5rem;
-		}
-	</style>
+	
 </div>
 
 <style>
 	.content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1rem;
 		max-width: 800px;
 		margin: 2rem auto;
 		padding: 1rem;
+	}
+	.harmonic-block {
+		margin: 1.5rem 0;
+	}
+	.harmonic-block p {
+		margin-bottom: 0.5rem;
+	}
+	.timeline {
+		list-style: none;
+		padding-left: 0;
+		margin: 1rem 0;
+	}
+	.timeline li {
+		margin: 0.5rem 0;
+		padding-left: 1rem;
+		border-left: 2px solid #ccc;
+	}
+	.timeline strong {
+		color: #333;
 	}
 </style>
