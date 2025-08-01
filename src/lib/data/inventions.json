@@ -35,23 +35,6 @@
         "location": "Switzerland, Germany",
         "link": "https://en.wikipedia.org/wiki/Tonnetz",
         "id": "tonnetz"
-    },
-    {
-        "date": "1895–1930s",
-        "innovation": "Player Piano Rolls",
-        "description": "Pneumatic playback system using perforated paper rolls",
-        "innovator": "Edwin S. Votey, Aeolian Co",
-        "location": "USA, Germany",
-        "link": "https://en.wikipedia.org/wiki/Player_piano",
-        "id": "player-piano-roll"
-    },
-    {
-        "date": "2015–present",
-        "innovation": "AI-based Feature Maps",
-        "description": "Clustering music genres/timbres using data-driven algorithms",
-        "innovator": "Google, Spotify, academic labs",
-        "location": "Global",
-        "link": "https://en.wikipedia.org/wiki/Music_information_retrieval",
-        "id": "ai"
     }
+
 ]
