@@ -550,9 +550,89 @@
 	/>
 </svelte:head>
 
-<h1>Tonnetz (Tone Network)</h1>
 
 <!-- Tonnetz: A hexagonal lattice representing harmonic relationships in music theory -->
+<div class="content">
+<h1>The Tonnetz System</h1>
+<h4>A geometric map of musical harmony</h4>
+<p>
+    The <strong>Tonnetz</strong> (German for <em>tone network</em>) is a two-dimensional grid that shows
+    how musical pitches and chords are related by simple, consonant intervals. First sketched by
+    mathematician <strong>Leonhard Euler</strong> in the 18th century, it reveals that harmony is not
+    random—it can be mapped like a city, with every note and chord having neighbors just a short
+    step away.
+</p>
+
+<h4>How it works</h4>
+<p>
+    The Tonnetz places pitches so that moving in specific directions corresponds to moving by certain
+    musical intervals:
+</p>
+<ul>
+    <li><strong>Horizontal axis:</strong> Perfect fifths (ratio 3:2)</li>
+    <li><strong>Diagonal one way:</strong> Major thirds (ratio 5:4)</li>
+    <li><strong>Diagonal the other way:</strong> Minor thirds (ratio 6:5)</li>
+</ul>
+<p>
+    Because these intervals have simple whole-number frequency ratios, they align in a perfect,
+    repeating grid. Major chords appear as triangles pointing one way; minor chords as triangles
+    pointing the other. Moving to a closely related chord is just a tiny step in this harmonic map.
+</p>
+
+<h4>Not a coincidence</h4>
+<p>
+    This perfect grid is no accident—it’s the direct result of the mathematics of harmony. Euler
+    realized that by plotting powers of 3 (perfect fifths) and powers of 5 (major thirds), a
+    two-dimensional lattice emerges. Composers throughout history may not have drawn the Tonnetz, but
+    they instinctively navigated its paths, moving between chords in ways that feel “close” to the ear.
+</p>
+
+<h4>Neo-Riemannian transformations</h4>
+<p>
+    In the 19th century, music theorists began using the Tonnetz to track elegant chord shifts in
+    chromatic harmony. Three famous moves are:
+</p>
+<ul>
+    <li><strong>P (Parallel):</strong> C major → C minor</li>
+    <li><strong>L (Leading-tone exchange):</strong> C major → E minor</li>
+    <li><strong>R (Relative):</strong> C major → A minor</li>
+</ul>
+<p>
+    Each is just a short slide along the grid—visual proof of smooth voice-leading.
+</p>
+
+<h4>A tool for composers and analysts</h4>
+<p>
+    Today, the Tonnetz is used to visualize harmonic motion in classical, jazz, film, and even pop
+    music. It bridges <b>math</b> and <b>music</b>, showing that harmony is both a physical phenomenon
+    and a navigable landscape.
+</p>
+
+<!-- Brief Historical Timeline -->
+<h4>A brief history of the Tonnetz</h4>
+<ul class="timeline">
+    <li>
+        <strong>1739 – Leonhard Euler:</strong> Publishes his <em>Speculum Musicum</em>, mapping pitches
+        into a two-dimensional lattice based on perfect fifths and major thirds.
+    </li>
+    <li>
+        <strong>Late 18th century:</strong> The idea circulates among theorists, though most composers
+        use it intuitively rather than diagramming it.
+    </li>
+    <li>
+        <strong>Late 19th century – Hugo Riemann:</strong> Uses the Tonnetz to describe smooth chord
+        transformations in chromatic harmony.
+    </li>
+    <li>
+        <strong>20th century:</strong> Revived by theorists studying Wagner, Liszt, and later film music
+        for its ability to explain unexpected chord progressions.
+    </li>
+    <li>
+        <strong>Modern era:</strong> Applied in computational music theory, jazz education, and
+        interactive music visualization tools.
+    </li>
+</ul>
+</div>
 
 <!-- Configuration Controls -->
 <div class="controls">
@@ -661,4 +741,35 @@
 		min-width: 20px;
 		text-align: center;
 	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1rem;
+		max-width: 800px;
+		margin: 2rem auto;
+		padding: 1rem;
+	}
+	.harmonic-block {
+		margin: 1.5rem 0;
+	}
+	.harmonic-block p {
+		margin-bottom: 0.5rem;
+	}
+	.timeline {
+		list-style: none;
+		padding-left: 0;
+		margin: 1rem 0;
+	}
+	.timeline li {
+		margin: 0.5rem 0;
+		padding-left: 1rem;
+		border-left: 2px solid #ccc;
+	}
+	.timeline strong {
+		color: #333;
+	}
 </style>
+
+
