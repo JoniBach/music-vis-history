@@ -10,7 +10,7 @@
 	/>
 </svelte:head>
 
-<div class="container">
+<div class="content">
 	<header class="hero">
 		<h1>The Story of Written Music</h1>
 		<p class="subtitle">How humanity learned to capture sound on paper</p>
@@ -149,30 +149,88 @@
 		</div>
 	</section>
 
-	<nav class="examples-nav">
-		<h2>Start Your Journey</h2>
-		<div class="nav-grid">
-			<div class="nav-card">
-				<div class="nav-icon"></div>
-				<h3>Interactive Staff Notation</h3>
-				<p>Experience the medieval breakthrough that changed music forever</p>
-				<span class="nav-arrow"></span>
-			</div>
-
-			<!-- Future examples can be added here -->
-			<div class="nav-card coming-soon">
-				<div class="nav-icon"></div>
-				<h3>Ancient Notations</h3>
-				<p>Coming soon: Explore the earliest attempts to write music</p>
-				<span class="nav-status">Coming Soon</span>
-			</div>
-
-			<div class="nav-card coming-soon">
-				<div class="nav-icon"></div>
-				<h3>Modern Innovations</h3>
-				<p>Coming soon: From printing press to digital age</p>
-				<span class="nav-status">Coming Soon</span>
-			</div>
-		</div>
-	</nav>
 </div>
+
+
+<style>
+	.tonnetz-container {
+		width: 100%;
+		max-width: 1200px;
+		min-width: 320px;
+		margin: 0 auto;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	.tonnetz-container svg {
+		width: 100%;
+		height: auto;
+		display: block;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		background: white;
+	}
+
+	.controls {
+		margin: 20px 0;
+		padding: 15px;
+		background: #f8f9fa;
+		border-radius: 8px;
+		border: 1px solid #dee2e6;
+		display: flex;
+		gap: 20px;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
+	.control-group {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.control-group label {
+		font-weight: 500;
+		min-width: 100px;
+	}
+
+	.control-group input[type='range'] {
+		width: 100px;
+	}
+
+	.control-group span {
+		font-weight: bold;
+		min-width: 20px;
+		text-align: center;
+	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1rem;
+		max-width: 800px;
+		padding: 1rem;
+	}
+	.harmonic-block {
+		margin: 1.5rem 0;
+	}
+	.harmonic-block p {
+		margin-bottom: 0.5rem;
+	}
+	.timeline {
+		list-style: none;
+		padding-left: 0;
+		margin: 1rem 0;
+	}
+	.timeline li {
+		margin: 0.5rem 0;
+		padding-left: 1rem;
+		border-left: 2px solid #ccc;
+	}
+	.timeline strong {
+		color: #333;
+	}
+</style>
+
+
