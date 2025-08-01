@@ -306,6 +306,12 @@
 				</div>
 			{/if}
 
+			{#if note.type === 'clef'}
+			<div class="note {hideNote ? 'hide' : ''}" style="top: {verticalPixelOffset}px">
+				{@html createHtmlEntityForGlyph(note.entity)}
+			</div>
+		{/if}
+
 			{#if note.type === 'chant'}
 				<div class="note" style="top: {verticalPixelOffset}px">
 					{@html createHtmlEntityForGlyph(note.duration)}
@@ -321,6 +327,17 @@
 			{#if note.type === 'barline'}
 				<div class="note" style="top: {verticalPixelOffset}px">
 					{@html createHtmlEntityForGlyph('barline' + note.duration)}
+				</div>
+			{/if}
+
+			{#if note.type === 'timeSig'}
+				<div class='timesig'>
+					<div class=" numerator" style="top: {verticalPixelOffset + staffLineSpacing * -4}px">
+						{@html createHtmlEntityForGlyph('timeSig' + note.numerator )}
+					</div>
+					<div class=" denominator" style="top: {verticalPixelOffset}px">
+						{@html createHtmlEntityForGlyph('timeSig' + note.denominator  )}
+					</div>
 				</div>
 			{/if}
 
@@ -371,6 +388,14 @@
 				{@html createHtmlEntityForGlyph(staff + 'Narrow')}
 			</div>
 		</div>
+
+		{#if note.type === 'timeSig'}
+		<div class="gap noselect">
+			<div style="visibility: {normalVariant ? 'visible' : 'hidden'}">
+				{@html createHtmlEntityForGlyph(staff + 'Wide')}
+			</div>
+		</div>
+		{/if}
 	{/if}
 </div>
 
@@ -378,6 +403,21 @@
 	.stave-note {
 		display: flex;
 		flex-direction: row;
+	}
+
+	.timesig {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		top: 0;
+		left: 0;
+	}
+	.numerator {
+		position: absolute;
+	}
+	.denominator {
+		position: absolute;
+
 	}
 
 	.hide {

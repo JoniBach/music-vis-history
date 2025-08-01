@@ -16,6 +16,8 @@
 	export let subtitle: string;
 	export let variant: string;
 	export let thoroughbass: boolean = false;
+	export let timeSignature;
+	export let clef;
 	export let data: {
 		ranges: Record<
 			string,
@@ -38,6 +40,76 @@
 		<h3>{subtitle}</h3>
 	</div>
 	<div class="smuFL score" style="font-size: {fontSize}px;">
+
+		{#if clef}
+			<Note
+				note={{
+					// note: 'noteDoubleWhole',
+					type: 'clef',
+					entity: 'gClef',
+					pitch: 'G4',
+				}}
+				{data}
+				{staff}
+				{fontSize}
+				isBass={false}
+				/>
+		{/if}
+
+		{#if thoroughbass}
+
+		<div class="stave-note">
+			<Note
+			note={{
+				// note: 'noteDoubleWhole',
+				type: 'clef',
+				entity: 'gClef',
+				pitch: 'G4',
+			}}
+					{data}
+					{staff}
+					{fontSize}
+					isBass={false}
+			/>
+			{#if thoroughbass}
+				<Note note={
+					{
+						// note: 'noteDoubleWhole',
+						type: 'clef',
+						entity: 'fClef',
+						pitch: 'D5',
+					}
+				} {data} {staff} {fontSize} {variant} transpose={12} {thoroughbass} isBass />
+			{/if}
+		</div>
+		<Note
+			note={{
+				// note: 'noteDoubleWhole',
+				type: 'clef',
+				entity: clef,
+				pitch: 'G4',
+			}}
+			{data}
+			{staff}
+			{fontSize}
+			isBass={false}
+			/>
+	{/if}
+		{#if timeSignature}
+			<Note
+				note={{
+					// note: 'noteDoubleWhole',
+					type: 'timeSig',
+					numerator: timeSignature.numerator,
+					denominator: timeSignature.denominator,
+					pitch: 'G4',
+				}}
+				{data}
+				{staff}
+				{fontSize}
+				isBass={false}
+				/>
+		{/if}
 		{#each notes as note}
 			<div class="stave-note">
 				<Note

@@ -248,6 +248,52 @@
 	];
 </script>
 
+<div class="content">
+	<h1>History of Figured Bass</h1>
+	<h4>Origins, Purpose, and Development</h4>
+	<p>
+		Figured bass, also known as basso continuo or thoroughbass, is a musical notation system that emerged during the Baroque era (c. 1600–1750) to provide a harmonic framework for improvised accompaniment. Below is a concise history of its origins, purpose, and development.
+	</p>
+	<ol class="timeline">
+		<li>
+			<h5>Late 16th Century: Early Basso Continuo</h5>
+			<p>
+				The roots of figured bass trace to late 16th-century Italy, where composers began notating bass lines for accompaniment instruments like the organ or harpsichord. The earliest known basso seguente (a precursor) appeared in Placido Falconio’s 1575 book of Introits and Alleluias, providing a bass line to support polyphonic vocal music.
+			</p>
+		</li>
+		<li>
+			<h5>Early 17th Century: Emergence of Figured Bass</h5>
+			<p>
+				By the early 1600s, composers like Lodovico Viadana (1602 motets) and Giovanni Croce (1594 motet) began adding figures—numerals and accidentals—above or below bass notes to indicate chords and intervals. This allowed keyboardists and lutenists to improvise harmonies, reducing the need for fully notated scores and enabling flexible performances.
+			</p>
+		</li>
+		<li>
+			<h5>Purpose: Harmonic Support and Improvisation</h5>
+			<p>
+				Figured bass was developed to guide accompanists in creating harmonic support for melodies, especially in sacred and secular music. It served as a shorthand, saving printing costs and allowing performers to adapt chords to the ensemble’s needs, enhancing expressiveness through improvisation. It was integral to Baroque music’s shift from polyphony to melody-driven harmony.
+			</p>
+		</li>
+		<li>
+			<h5>Baroque Era (1600–1750): Standardization and Widespread Use</h5>
+			<p>
+				During the Baroque period, figured bass became a cornerstone of music, used in works by composers like J.S. Bach and Handel. It standardized chord notation (e.g., “6” for first inversion, “6/4” for second inversion) and was essential in genres like opera, sonatas, and sacred music, played by harpsichords, organs, or lutes.
+			</p>
+		</li>
+		<li>
+			<h5>18th Century: Pedagogical and Creative Role</h5>
+			<p>
+				Figured bass was not only for professionals; amateurs learned it through handbooks by composers like Handel and C.P.E. Bach. It remained a teaching tool for harmony, as seen in Mozart’s lessons to Thomas Attwood. Its use extended into the early Classical period, though it declined with the rise of fully notated scores.
+			</p>
+		</li>
+		<li>
+			<h5>Late 18th Century: Decline and Legacy</h5>
+			<p>
+				By the late 1700s, as symphonic music and precise notation grew, figured bass waned, replaced by fully written-out parts. Its legacy persists in music theory education, where it’s used to analyze chord inversions, and in historically informed performances, reviving Baroque improvisation practices.
+			</p>
+		</li>
+	</ol>
+
+
 {#if loading}
 	<p>Loading SMuFL metadata...</p>
 {:else if error}
@@ -266,3 +312,37 @@
 
 	<Documentation {data} {searchSuggestions} />
 {/if}
+
+</div>
+
+
+<style>
+	.content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1rem;
+		max-width: 800px;
+		margin: 2rem auto;
+		padding: 1rem;
+	}
+	.harmonic-block {
+		margin: 1.5rem 0;
+	}
+	.harmonic-block p {
+		margin-bottom: 0.5rem;
+	}
+	.timeline {
+		list-style: none;
+		padding-left: 0;
+		margin: 1rem 0;
+	}
+	.timeline li {
+		margin: 0.5rem 0;
+		padding-left: 1rem;
+		border-left: 2px solid #ccc;
+	}
+	.timeline strong {
+		color: #333;
+	}
+</style>
