@@ -4,10 +4,13 @@
 	import * as Tone from 'tone';
 
 	let svgElement: SVGSVGElement;
+	let containerElement: HTMLDivElement;
 	let polySynth: Tone.PolySynth;
 	let isPlaying = false;
 	let isDragging = false;
 	let currentlyPlayingElements = new Set<string>();
+	let containerWidth = 800;
+	let containerHeight = 600;
 
 	// Configuration
 	let numOctaves = 2; // Number of octaves to display
@@ -257,13 +260,22 @@
 		createTonnetz();
 	}
 
+	// Update container dimensions
+	function updateDimensions() {
+		if (containerElement) {
+			containerWidth = containerElement.clientWidth;
+			containerHeight = Math.max(400, Math.min(containerWidth * 0.75, 800)); // Responsive height with limits
+		}
+	}
+
 	// Create the hexagonal Tonnetz visualization
 	function createTonnetz() {
+		updateDimensions();
 		const { points, triangles } = generateHexagonalTonnetz();
 
 		const svg = d3.select(svgElement);
-		const width = 800;
-		const height = 600;
+		const width = containerWidth;
+		const height = containerHeight;
 
 		svg.attr('width', width).attr('height', height);
 
@@ -497,26 +509,27 @@
 				type: oscillatorType
 			},
 			envelope: {
-				attack: 0.01,
-				decay: 0.01,
-				sustain: 1,
-				release: 0.5
-			},
-			modulation: {
-				type: 'square'
-			},
-			modulationEnvelope: {
-				attack: 0.2,
-				decay: 0.01,
-				sustain: 1,
-				release: 0.5
+				attack: 0.1,
+				decay: 0.3,
+				sustain: 0.3,
+				release: 1
 			}
-		}).toDestination();
+		});
 
-		// Create the visualization
+		// Set up resize observer for responsive behavior
+		const resizeObserver = new ResizeObserver(() => {
+			updateDimensions();
+			regenerateTonnetz();
+		});
+
+		if (containerElement) {
+			resizeObserver.observe(containerElement);
+		}
+
+		// Create the initial visualization
 		createTonnetz();
 
-		// Global event handlers for drag functionality
+		// Set up global mouse event handlers for drag functionality
 		const handleGlobalMouseUp = () => {
 			if (isDragging) {
 				isDragging = false;
@@ -524,20 +537,21 @@
 			}
 		};
 
-		const handleGlobalMouseMove = (event: MouseEvent) => {
+		const handleGlobalMouseLeave = () => {
 			if (isDragging) {
-				// Prevent text selection during drag
-				event.preventDefault();
+				isDragging = false;
+				stopAllPlayingElements();
 			}
 		};
 
 		document.addEventListener('mouseup', handleGlobalMouseUp);
-		document.addEventListener('mousemove', handleGlobalMouseMove);
+		document.addEventListener('mouseleave', handleGlobalMouseLeave);
 
 		// Cleanup on component destroy
 		return () => {
+			resizeObserver.disconnect();
 			document.removeEventListener('mouseup', handleGlobalMouseUp);
-			document.removeEventListener('mousemove', handleGlobalMouseMove);
+			document.removeEventListener('mouseleave', handleGlobalMouseLeave);
 		};
 	});
 </script>
@@ -704,11 +718,29 @@
 	</div>
 </div>
 
-<div>
-	<svg bind:this={svgElement} width="800" height="600"></svg>
+<div class="tonnetz-container" bind:this={containerElement}>
+	<svg bind:this={svgElement}></svg>
 </div>
 
 <style>
+	.tonnetz-container {
+		width: 100%;
+		max-width: 1200px;
+		min-width: 320px;
+		margin: 0 auto;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	.tonnetz-container svg {
+		width: 100%;
+		height: auto;
+		display: block;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		background: white;
+	}
+
 	.controls {
 		margin: 20px 0;
 		padding: 15px;
