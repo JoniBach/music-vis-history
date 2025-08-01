@@ -53,14 +53,21 @@
 		}
 
 		// Convert hex coordinates to pixel coordinates and assign notes
+		// Rotated 90 degrees counter-clockwise: q becomes vertical, r becomes diagonal
 		positions.forEach((pos, i) => {
-			const x = centerX + hexRadius * ((3 / 2) * pos.q);
-			const y = centerY + hexRadius * ((Math.sqrt(3) / 2) * pos.q + Math.sqrt(3) * pos.r);
+			// Rotate 90 degrees counter-clockwise: swap x/y and negate new x
+			const originalX = hexRadius * ((3 / 2) * pos.q);
+			const originalY = hexRadius * ((Math.sqrt(3) / 2) * pos.q + Math.sqrt(3) * pos.r);
+			
+			// Apply 90-degree counter-clockwise rotation: (x,y) -> (-y,x)
+			const x = centerX - originalY;
+			const y = centerY + originalX;
 
 			// Assign notes using the Tonnetz pattern
-			// Each step right = +7 semitones (perfect fifth)
-			// Each step up-right = +4 semitones (major third)
-			const totalSemitones = pos.q * 7 + pos.r * 4;
+			// Horizontal: perfect fifths (C-G-D-A-E-B left to right)
+			// Diagonal: major thirds (C to E should be +4 semitones)
+			// Need to adjust diagonal direction for correct major third progression
+			const totalSemitones = (-pos.r) * 7 + (-pos.q) * 4;
 			const noteIndex = ((totalSemitones % 12) + 12) % 12; // Ensure positive
 			const noteName = noteNames[noteIndex];
 
@@ -92,7 +99,7 @@
 		for (const point of points) {
 			const [q, r] = point.id.split('_').map(Number);
 
-			// Check for major triad (pointing up): current point, right neighbor, up-right neighbor
+			// Check for major triad (pointing down): current point, right neighbor, up-right neighbor
 			const majorTriad = [
 				`${q}_${r}`, // current point
 				`${q + 1}_${r}`, // right (perfect fifth)
@@ -114,7 +121,7 @@
 				});
 			}
 
-			// Check for minor triad (pointing down): current point, up-left neighbor, left neighbor
+			// Check for minor triad (pointing up): current point, up-left neighbor, left neighbor
 			const minorTriad = [
 				`${q}_${r}`, // current point
 				`${q}_${r - 1}`, // up-left (minor third)
@@ -584,9 +591,9 @@
     musical intervals:
 </p>
 <ul>
-    <li><strong>Horizontal axis:</strong> Perfect fifths (ratio 3:2)</li>
-    <li><strong>Diagonal one way:</strong> Major thirds (ratio 5:4)</li>
-    <li><strong>Diagonal the other way:</strong> Minor thirds (ratio 6:5)</li>
+    <li><strong>Moving right (horizontal):</strong> Perfect fifths (ratio 3:2)</li>
+    <li><strong>Moving up-right (diagonal):</strong> Major thirds (ratio 5:4)</li>
+    <li><strong>Moving down-right (diagonal):</strong> Minor thirds (ratio 6:5)</li>
 </ul>
 <p>
     Because these intervals have simple whole-number frequency ratios, they align in a perfect,
