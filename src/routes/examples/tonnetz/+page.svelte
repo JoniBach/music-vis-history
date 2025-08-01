@@ -4,10 +4,13 @@
 	import * as Tone from 'tone';
 
 	let svgElement: SVGSVGElement;
+	let containerElement: HTMLDivElement;
 	let polySynth: Tone.PolySynth;
 	let isPlaying = false;
 	let isDragging = false;
 	let currentlyPlayingElements = new Set<string>();
+	let containerWidth = 800;
+	let containerHeight = 600;
 
 	// Configuration
 	let numOctaves = 2; // Number of octaves to display
@@ -257,13 +260,22 @@
 		createTonnetz();
 	}
 
+	// Update container dimensions
+	function updateDimensions() {
+		if (containerElement) {
+			containerWidth = containerElement.clientWidth;
+			containerHeight = Math.max(400, Math.min(containerWidth * 0.75, 800)); // Responsive height with limits
+		}
+	}
+
 	// Create the hexagonal Tonnetz visualization
 	function createTonnetz() {
+		updateDimensions();
 		const { points, triangles } = generateHexagonalTonnetz();
 
 		const svg = d3.select(svgElement);
-		const width = 800;
-		const height = 600;
+		const width = containerWidth;
+		const height = containerHeight;
 
 		svg.attr('width', width).attr('height', height);
 
@@ -497,26 +509,27 @@
 				type: oscillatorType
 			},
 			envelope: {
-				attack: 0.01,
-				decay: 0.01,
-				sustain: 1,
-				release: 0.5
-			},
-			modulation: {
-				type: 'square'
-			},
-			modulationEnvelope: {
-				attack: 0.2,
-				decay: 0.01,
-				sustain: 1,
-				release: 0.5
+				attack: 0.1,
+				decay: 0.3,
+				sustain: 0.3,
+				release: 1
 			}
 		}).toDestination();
 
-		// Create the visualization
+		// Set up resize observer for responsive behavior
+		const resizeObserver = new ResizeObserver(() => {
+			updateDimensions();
+			regenerateTonnetz();
+		});
+
+		if (containerElement) {
+			resizeObserver.observe(containerElement);
+		}
+
+		// Create the initial visualization
 		createTonnetz();
 
-		// Global event handlers for drag functionality
+		// Set up global mouse event handlers for drag functionality
 		const handleGlobalMouseUp = () => {
 			if (isDragging) {
 				isDragging = false;
@@ -524,20 +537,21 @@
 			}
 		};
 
-		const handleGlobalMouseMove = (event: MouseEvent) => {
+		const handleGlobalMouseLeave = () => {
 			if (isDragging) {
-				// Prevent text selection during drag
-				event.preventDefault();
+				isDragging = false;
+				stopAllPlayingElements();
 			}
 		};
 
 		document.addEventListener('mouseup', handleGlobalMouseUp);
-		document.addEventListener('mousemove', handleGlobalMouseMove);
+		document.addEventListener('mouseleave', handleGlobalMouseLeave);
 
 		// Cleanup on component destroy
 		return () => {
+			resizeObserver.disconnect();
 			document.removeEventListener('mouseup', handleGlobalMouseUp);
-			document.removeEventListener('mousemove', handleGlobalMouseMove);
+			document.removeEventListener('mouseleave', handleGlobalMouseLeave);
 		};
 	});
 </script>
@@ -550,9 +564,90 @@
 	/>
 </svelte:head>
 
-<h1>Tonnetz (Tone Network)</h1>
 
 <!-- Tonnetz: A hexagonal lattice representing harmonic relationships in music theory -->
+<div class="content">
+<h1>The Tonnetz System</h1>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/I5Bj9GyAfRc?si=KE21UpbG8mJFnX3T" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<h4>A geometric map of musical harmony</h4>
+<p>
+    The <strong>Tonnetz</strong> (German for <em>tone network</em>) is a two-dimensional grid that shows
+    how musical pitches and chords are related by simple, consonant intervals. First sketched by
+    mathematician <strong>Leonhard Euler</strong> in the 18th century, it reveals that harmony is not
+    random—it can be mapped like a city, with every note and chord having neighbors just a short
+    step away.
+</p>
+
+<h4>How it works</h4>
+<p>
+    The Tonnetz places pitches so that moving in specific directions corresponds to moving by certain
+    musical intervals:
+</p>
+<ul>
+    <li><strong>Horizontal axis:</strong> Perfect fifths (ratio 3:2)</li>
+    <li><strong>Diagonal one way:</strong> Major thirds (ratio 5:4)</li>
+    <li><strong>Diagonal the other way:</strong> Minor thirds (ratio 6:5)</li>
+</ul>
+<p>
+    Because these intervals have simple whole-number frequency ratios, they align in a perfect,
+    repeating grid. Major chords appear as triangles pointing one way; minor chords as triangles
+    pointing the other. Moving to a closely related chord is just a tiny step in this harmonic map.
+</p>
+
+<h4>Not a coincidence</h4>
+<p>
+    This perfect grid is no accident—it’s the direct result of the mathematics of harmony. Euler
+    realized that by plotting powers of 3 (perfect fifths) and powers of 5 (major thirds), a
+    two-dimensional lattice emerges. Composers throughout history may not have drawn the Tonnetz, but
+    they instinctively navigated its paths, moving between chords in ways that feel “close” to the ear.
+</p>
+
+<h4>Neo-Riemannian transformations</h4>
+<p>
+    In the 19th century, music theorists began using the Tonnetz to track elegant chord shifts in
+    chromatic harmony. Three famous moves are:
+</p>
+<ul>
+    <li><strong>P (Parallel):</strong> C major → C minor</li>
+    <li><strong>L (Leading-tone exchange):</strong> C major → E minor</li>
+    <li><strong>R (Relative):</strong> C major → A minor</li>
+</ul>
+<p>
+    Each is just a short slide along the grid—visual proof of smooth voice-leading.
+</p>
+
+<h4>A tool for composers and analysts</h4>
+<p>
+    Today, the Tonnetz is used to visualize harmonic motion in classical, jazz, film, and even pop
+    music. It bridges <b>math</b> and <b>music</b>, showing that harmony is both a physical phenomenon
+    and a navigable landscape.
+</p>
+
+<!-- Brief Historical Timeline -->
+<h4>A brief history of the Tonnetz</h4>
+<ul class="timeline">
+    <li>
+        <strong>1739 – Leonhard Euler:</strong> Publishes his <em>Speculum Musicum</em>, mapping pitches
+        into a two-dimensional lattice based on perfect fifths and major thirds.
+    </li>
+    <li>
+        <strong>Late 18th century:</strong> The idea circulates among theorists, though most composers
+        use it intuitively rather than diagramming it.
+    </li>
+    <li>
+        <strong>Late 19th century – Hugo Riemann:</strong> Uses the Tonnetz to describe smooth chord
+        transformations in chromatic harmony.
+    </li>
+    <li>
+        <strong>20th century:</strong> Revived by theorists studying Wagner, Liszt, and later film music
+        for its ability to explain unexpected chord progressions.
+    </li>
+    <li>
+        <strong>Modern era:</strong> Applied in computational music theory, jazz education, and
+        interactive music visualization tools.
+    </li>
+</ul>
+</div>
 
 <!-- Configuration Controls -->
 <div class="controls">
@@ -624,11 +719,29 @@
 	</div>
 </div>
 
-<div>
-	<svg bind:this={svgElement} width="800" height="600"></svg>
+<div class="tonnetz-container" bind:this={containerElement}>
+	<svg bind:this={svgElement}></svg>
 </div>
 
 <style>
+	.tonnetz-container {
+		width: 100%;
+		max-width: 1200px;
+		min-width: 320px;
+		margin: 0 auto;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	.tonnetz-container svg {
+		width: 100%;
+		height: auto;
+		display: block;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		background: white;
+	}
+
 	.controls {
 		margin: 20px 0;
 		padding: 15px;
@@ -661,4 +774,35 @@
 		min-width: 20px;
 		text-align: center;
 	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1rem;
+		max-width: 800px;
+		margin: 2rem auto;
+		padding: 1rem;
+	}
+	.harmonic-block {
+		margin: 1.5rem 0;
+	}
+	.harmonic-block p {
+		margin-bottom: 0.5rem;
+	}
+	.timeline {
+		list-style: none;
+		padding-left: 0;
+		margin: 1rem 0;
+	}
+	.timeline li {
+		margin: 0.5rem 0;
+		padding-left: 1rem;
+		border-left: 2px solid #ccc;
+	}
+	.timeline strong {
+		color: #333;
+	}
 </style>
+
+
