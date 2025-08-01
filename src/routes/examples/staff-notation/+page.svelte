@@ -53,7 +53,7 @@
 
 
 	// Notes for "Ut queant laxis" on a five-line staff, showcasing modern notation
-	let classicalNotes = [
+	let classicalNotes2 = [
 		//
 		{
 			// note: 'barlineSingle',
@@ -564,7 +564,7 @@
 			title="Basic Classical Music Notation"
 			subtitle="Some examples of different notes, rests, and other musical elements"
 			fontSize={50}
-			notes={classicalNotes}
+			notes={classicalNotes2}
 			{data}
 			staff="staff5Lines"
 			thoroughbass
