@@ -136,9 +136,10 @@
 	<title>Harmonic Series</title>
 	<meta name="description" content="An interactive visualization of the harmonic series." />
 </svelte:head>
-
 <div class="content">
 	<h1>The Harmonic Series</h1>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Wx_kugSemfY?si=azkPvNuUbB_VQLit" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+	
 	<h4>In music, every note we hear is not a single, pure tone</h4>
 	<p>
 		It’s a blend of many tones stacked together in a precise mathematical pattern. This natural

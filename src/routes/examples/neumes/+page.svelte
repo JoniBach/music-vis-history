@@ -400,6 +400,8 @@
 <div class="content">
 
 <h1>Neumes: The Roots of Musical Notation</h1>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/fJtgzYAQOkk?si=T6j8B0Xl0brQPP0P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 	<h4>Before modern musical notation, there was a simpler system</h4>
 	<p>
 		Neumes were the earliest known symbols used to represent musical pitch and melody in Western and some Eastern musical traditions. These small, elegant marks guided singers through the contours of sacred chants, serving as a memory aid long before the five-line staff was invented.

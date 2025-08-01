@@ -568,6 +568,7 @@
 <!-- Tonnetz: A hexagonal lattice representing harmonic relationships in music theory -->
 <div class="content">
 <h1>The Tonnetz System</h1>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/I5Bj9GyAfRc?si=Dl3tgzxiN8RZ127W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 <h4>A geometric map of musical harmony</h4>
 <p>
     The <strong>Tonnetz</strong> (German for <em>tone network</em>) is a two-dimensional grid that shows

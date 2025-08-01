@@ -66,7 +66,7 @@
 			type: 'note',
 			duration: 'DoubleWhole',
 			// y: -1,
-			pitch: 'D4',
+			pitch: 'D3',
 			lyric: 'Notes of different lengths at different pitches'
 		},
 		{
@@ -74,70 +74,70 @@
 			type: 'note',
 			duration: 'DoubleWholeSquare',
 			// y: 0,
-			pitch: 'E4'
+			pitch: 'E3'
 		},
 		{
 			// note: 'noteDoubleWhole',
 			type: 'note',
 			duration: 'DoubleWhole',
 			// y: 1,
-			pitch: 'F4'
+			pitch: 'F3'
 		},
 		{
 			// note: 'noteWhole',
 			type: 'note',
 			duration: 'Whole',
 			// y: 2,
-			pitch: 'G4'
+			pitch: 'G3'
 		},
 		{
 			// note: 'noteHalfUp',
 			type: 'note',
 			duration: 'Half',
 			// y: 3,
-			pitch: 'A5'
+			pitch: 'A4'
 		},
 		{
 			// note: 'noteHalfDown',
 			type: 'note',
 			duration: 'Half',
 			// y: 4,
-			pitch: 'B5'
+			pitch: 'B4'
 		},
 		{
 			// note: 'noteQuarterUp',
 			type: 'note',
 			duration: 'Quarter',
-			// y: 5,
-			pitch: 'C5'
+			// y: 4,
+			pitch: 'C4'
 		},
 		{
 			// note: 'note8thUp',
 			type: 'note',
 			duration: '8th',
 			// y: 6,
-			pitch: 'D5'
+			pitch: 'D4'
 		},
 		{
 			// note: 'note16thUp',
 			type: 'note',
 			duration: '16th',
 			// y: 7,
-			pitch: 'E5'
+			pitch: 'E4'
 		},
 		{
 			// note: 'note32ndUp',
 			type: 'note',
 			duration: '32nd',
 			// y: 8,
-			pitch: 'F5'
+			pitch: 'F4'
 		},
 		{
 			// note: 'note64thUp',
 			type: 'note',
 			duration: '64th',
 			// y: 9,
-			pitch: 'G5'
+			pitch: 'G4'
 		},
 
 		{
@@ -150,7 +150,7 @@
 			type: 'note',
 			duration: 'Quarter',
 			// y: 10,
-			pitch: 'A6',
+			pitch: 'A5',
 			lyric: 'Extended Ledger Lines'
 		},
 		{
@@ -481,6 +481,8 @@
 
 <div class="content">
 	<h1>Modern Staff Notation: Precision in Music</h1>
+
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/ua-N1JuqO5M?si=iu90PhUpg0uIt-Bz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 	<h4>The foundation of Western music</h4>
 	<p>
 		Modern staff notation, characterized by the five-line staff, standardized note shapes, and barlines, revolutionized music by providing a precise system for notating pitch and rhythm. Evolving from the neumes of the early medieval period, this system became the universal standard for Western music, enabling complex compositions and global dissemination.
