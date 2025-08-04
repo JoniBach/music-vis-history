@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Tonnetz from '$lib/components/visualization/Tonnetz.svelte';
-	import TonnetzControls, { type TonnetzControlsData } from '$lib/components/visualization/TonnetzControls.svelte';
+	import TonnetzControls, {
+		type TonnetzControlsData
+	} from '$lib/components/visualization/TonnetzControls.svelte';
 
 	// State management for controls - now at page level
 	let controls: TonnetzControlsData = {
@@ -145,19 +147,14 @@
 </div>
 
 <!-- Interactive Tonnetz Component with Controls -->
-<TonnetzControls 
-	bind:controls 
+<TonnetzControls
+	bind:controls
 	on:regenerate={handleRegenerate}
 	on:zoomChange={handleZoomChange}
 	on:oscillatorChange={handleOscillatorChange}
 />
 
-<Tonnetz 
-	bind:this={tonnetzComponent}
-	{controls}
-	width={800} 
-	height={600} 
-/>
+<Tonnetz bind:this={tonnetzComponent} {controls} width={800} height={600} />
 
 <style>
 	/* Page-specific styles - component handles its own styling */

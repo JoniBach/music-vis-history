@@ -47,7 +47,23 @@
 	// Component props
 	export let width = 800;
 	export let height = 600;
-	export let controls: TonnetzControlsData;
+	export let controls: TonnetzControlsData = {
+		numOctaves: 2,
+		baseOctave: 4,
+		gridRadius: 3,
+		zoomScale: 1.0,
+		startingNote: 'C',
+		oscillatorType: 'sawtooth',
+		showChordNames: true,
+		showRomanNumerals: true,
+		showRootHighlight: true,
+		showTriangles: true,
+		showNoteLabels: true,
+		showLegend: true,
+		showOnlyKeyTriangles: false,
+		showMajorTriangles: true,
+		showMinorTriangles: true
+	};
 
 	// State
 	let svgElement: SVGSVGElement;
@@ -56,21 +72,21 @@
 	let currentlyPlayingElements = new Set<string>();
 
 	// Reactive statements to update internal state when controls change
-	$: numOctaves = controls?.numOctaves ?? 2;
-	$: baseOctave = controls?.baseOctave ?? 4;
-	$: gridRadius = controls?.gridRadius ?? 3;
-	$: zoomScale = controls?.zoomScale ?? 1.0;
-	$: startingNote = controls?.startingNote ?? 'C';
-	$: oscillatorType = controls?.oscillatorType ?? 'sawtooth';
-	$: showChordNames = controls?.showChordNames ?? true;
-	$: showRomanNumerals = controls?.showRomanNumerals ?? true;
-	$: showRootHighlight = controls?.showRootHighlight ?? true;
-	$: showTriangles = controls?.showTriangles ?? true;
-	$: showNoteLabels = controls?.showNoteLabels ?? true;
-	$: showLegend = controls?.showLegend ?? true;
-	$: showOnlyKeyTriangles = controls?.showOnlyKeyTriangles ?? false;
-	$: showMajorTriangles = controls?.showMajorTriangles ?? true;
-	$: showMinorTriangles = controls?.showMinorTriangles ?? true;
+	$: numOctaves = controls.numOctaves;
+	$: baseOctave = controls.baseOctave;
+	$: gridRadius = controls.gridRadius;
+	$: zoomScale = controls.zoomScale;
+	$: startingNote = controls.startingNote;
+	$: oscillatorType = controls.oscillatorType;
+	$: showChordNames = controls.showChordNames;
+	$: showRomanNumerals = controls.showRomanNumerals;
+	$: showRootHighlight = controls.showRootHighlight;
+	$: showTriangles = controls.showTriangles;
+	$: showNoteLabels = controls.showNoteLabels;
+	$: showLegend = controls.showLegend;
+	$: showOnlyKeyTriangles = controls?.showOnlyKeyTriangles;
+	$: showMajorTriangles = controls?.showMajorTriangles;
+	$: showMinorTriangles = controls?.showMinorTriangles;
 
 	// Visual configuration
 	const VISUAL_CONFIG = {
@@ -92,7 +108,7 @@
 	const HEX_RADIUS = 50;
 	const BASE_FREQUENCY = 261.63; // C4 frequency
 
-	// Pure calculation functions
+	// Pure calculation functions - all functions rely only on parameters
 	const generateHexPositions = (radius: number): HexPosition[] => {
 		const positions: HexPosition[] = [];
 		for (let q = -radius; q <= radius; q++) {
@@ -103,9 +119,9 @@
 		return positions;
 	};
 
-	const hexToPixel = (pos: HexPosition): { x: number; y: number } => ({
-		x: HEX_RADIUS * (Math.sqrt(3) * pos.q + (Math.sqrt(3) / 2) * pos.r),
-		y: HEX_RADIUS * ((3 / 2) * pos.r)
+	const hexToPixel = (pos: HexPosition, hexRadius: number): { x: number; y: number } => ({
+		x: hexRadius * (Math.sqrt(3) * pos.q + (Math.sqrt(3) / 2) * pos.r),
+		y: hexRadius * ((3 / 2) * pos.r)
 	});
 
 	// Reusable music theory functions
@@ -137,27 +153,18 @@
 		return BASE_FREQUENCY * Math.pow(2, semitonesFromC4 / 12);
 	};
 
-	const calculateNote = (pos: HexPosition) => {
+	const calculateNote = (pos: HexPosition, startingNote: string, baseOctave: number, numOctaves: number) => {
 		const startingOffset = getStartingNoteOffset(startingNote);
 		const totalSemitones = pos.q * 7 + pos.r * 4;
 		const noteIndex = calculateSemitoneIndex(totalSemitones, startingOffset);
-		const noteName = NOTE_NAMES[noteIndex];
 		const octave = calculateOctave(totalSemitones, startingOffset, baseOctave, numOctaves);
 		const frequency = calculateFrequency(noteIndex, octave);
+		const displayName = `${NOTE_NAMES[noteIndex]}${octave}`;
 
-		return {
-			noteName,
-			octave,
-			frequency,
-			displayName: `${noteName}${octave}`
-		};
+		return { noteIndex, octave, frequency, displayName };
 	};
 
 	// Chord calculation functions
-	const getNoteNameOnly = (fullNote: string): string => {
-		return fullNote.replace(/\d+$/, '');
-	};
-
 	const noteToSemitone = (noteName: string): number => {
 		return NOTE_NAMES.indexOf(noteName as (typeof NOTE_NAMES)[number]);
 	};
@@ -305,9 +312,9 @@
 		return { chordName, romanNumeral };
 	};
 
-	const createPoint = (pos: HexPosition): Point => {
-		const pixel = hexToPixel(pos);
-		const noteInfo = calculateNote(pos);
+	const createPoint = (pos: HexPosition, hexRadius: number, startingNote: string, baseOctave: number, numOctaves: number): Point => {
+		const pixel = hexToPixel(pos, hexRadius);
+		const noteInfo = calculateNote(pos, startingNote, baseOctave, numOctaves);
 		return {
 			...pixel,
 			note: noteInfo.displayName,
@@ -379,6 +386,55 @@
 		return triangles;
 	};
 
+	// Pure audio configuration function
+	const createPolySynthConfig = (oscillatorType: 'sine' | 'square' | 'sawtooth' | 'triangle') => ({
+		harmonicity: 3,
+		modulationIndex: 10,
+		oscillator: { type: oscillatorType },
+		envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.5 },
+		modulation: { type: 'square' as const },
+		modulationEnvelope: { attack: 0.2, decay: 0.01, sustain: 1, release: 0.5 }
+	});
+
+	// Pure visual helper functions
+	const getNoteNameOnly = (noteWithOctave: string): string => {
+		return noteWithOctave.replace(/[0-9]/g, '');
+	};
+
+	const calculateNoteColor = (
+		noteWithOctave: string, 
+		startingNote: string, 
+		showRootHighlight: boolean, 
+		visualConfig: typeof VISUAL_CONFIG
+	): string => {
+		if (!showRootHighlight) return visualConfig.noteColor;
+		const noteNameOnly = getNoteNameOnly(noteWithOctave);
+		return noteNameOnly === startingNote 
+			? visualConfig.startingNoteColor 
+			: visualConfig.noteColor;
+	};
+
+	const createTrianglePoints = (triangle: Triangle, points: Point[]): string => {
+		return triangle.points
+			.map((id) => points.find((p) => p.id === id))
+			.filter(Boolean)
+			.map((p) => `${p!.x},${p!.y}`)
+			.join(' ');
+	};
+
+	const createLegendData = (visualConfig: typeof VISUAL_CONFIG) => [
+		{
+			color: visualConfig.majorTriangleColor,
+			label: 'Major',
+			y: 0
+		},
+		{
+			color: visualConfig.minorTriangleColor,
+			label: 'Minor',
+			y: 30
+		}
+	];
+
 	// Audio functions
 	const startChord = (frequencies: number[]) => {
 		if (!polySynth) return;
@@ -421,10 +477,42 @@
 		}
 	};
 
+	// Pure triangle filtering functions
+	const filterTrianglesByKey = (triangles: Triangle[], showOnlyKeyTriangles: boolean): Triangle[] => {
+		if (!showOnlyKeyTriangles) return triangles;
+		return triangles.filter(
+			(t) => t.romanNumeral && t.romanNumeral !== '-' && t.romanNumeral !== '?'
+		);
+	};
+
+	const filterTrianglesByQuality = (
+		triangles: Triangle[], 
+		showMajorTriangles: boolean, 
+		showMinorTriangles: boolean
+	): Triangle[] => {
+		if (showMajorTriangles && showMinorTriangles) return triangles;
+		return triangles.filter((t) => {
+			if (t.type === 'major' && !showMajorTriangles) return false;
+			if (t.type === 'minor' && !showMinorTriangles) return false;
+			return true;
+		});
+	};
+
+	const filterTriangles = (
+		triangles: Triangle[], 
+		showOnlyKeyTriangles: boolean, 
+		showMajorTriangles: boolean, 
+		showMinorTriangles: boolean
+	): Triangle[] => {
+		let filtered = filterTrianglesByKey(triangles, showOnlyKeyTriangles);
+		filtered = filterTrianglesByQuality(filtered, showMajorTriangles, showMinorTriangles);
+		return filtered;
+	};
+
 	// Main generation function
 	const generateTonnetzData = () => {
 		const positions = generateHexPositions(gridRadius);
-		const points = positions.map(createPoint);
+		const points = positions.map(pos => createPoint(pos, HEX_RADIUS, startingNote, baseOctave, numOctaves));
 		const pointMap = new Map(points.map((p) => [p.id, p]));
 		const triangles = generateTriangles(positions, pointMap);
 		return { points, triangles };
@@ -442,37 +530,19 @@
 
 		// Draw triangles if enabled
 		if (showTriangles) {
-			// Filter triangles based on key membership and chord quality
-			let filteredTriangles = triangles;
-
-			// Filter by key membership if enabled
-			if (showOnlyKeyTriangles) {
-				filteredTriangles = filteredTriangles.filter(
-					(t) => t.romanNumeral && t.romanNumeral !== '-' && t.romanNumeral !== '?'
-				);
-			}
-
-			// Filter by chord quality (major/minor)
-			if (!showMajorTriangles || !showMinorTriangles) {
-				filteredTriangles = filteredTriangles.filter((t) => {
-					if (t.type === 'major' && !showMajorTriangles) return false;
-					if (t.type === 'minor' && !showMinorTriangles) return false;
-					return true;
-				});
-			}
+			const filteredTriangles = filterTriangles(
+				triangles, 
+				showOnlyKeyTriangles, 
+				showMajorTriangles, 
+				showMinorTriangles
+			);
 
 			g.selectAll('.triangle')
 				.data(filteredTriangles)
 				.enter()
 				.append('polygon')
 				.attr('class', 'triangle')
-				.attr('points', (d) =>
-					d.points
-						.map((id) => points.find((p) => p.id === id))
-						.filter(Boolean)
-						.map((p) => `${p!.x},${p!.y}`)
-						.join(' ')
-				)
+				.attr('points', (d) => createTrianglePoints(d, points))
 				.attr('fill', (d) =>
 					d.type === 'major' ? VISUAL_CONFIG.majorTriangleColor : VISUAL_CONFIG.minorTriangleColor
 				)
@@ -504,24 +574,13 @@
 				});
 		}
 
-		// Filter triangles for chord/Roman numeral display based on key membership and chord quality
-		let displayTriangles = triangles;
-
-		// Filter by key membership if enabled
-		if (showOnlyKeyTriangles) {
-			displayTriangles = displayTriangles.filter(
-				(t) => t.romanNumeral && t.romanNumeral !== '-' && t.romanNumeral !== '?'
-			);
-		}
-
-		// Filter by chord quality (major/minor)
-		if (!showMajorTriangles || !showMinorTriangles) {
-			displayTriangles = displayTriangles.filter((t) => {
-				if (t.type === 'major' && !showMajorTriangles) return false;
-				if (t.type === 'minor' && !showMinorTriangles) return false;
-				return true;
-			});
-		}
+		// Filter triangles for chord/Roman numeral display
+		const displayTriangles = filterTriangles(
+			triangles, 
+			showOnlyKeyTriangles, 
+			showMajorTriangles, 
+			showMinorTriangles
+		);
 
 		// Draw chord names if enabled
 		if (showChordNames) {
@@ -578,16 +637,7 @@
 			.attr('cx', (d) => d.x)
 			.attr('cy', (d) => d.y)
 			.attr('r', VISUAL_CONFIG.noteRadius)
-			.attr('fill', (d) => {
-				// Highlight starting note in yellow if enabled
-				if (showRootHighlight) {
-					const noteNameOnly = d.note.replace(/[0-9]/g, '');
-					return noteNameOnly === startingNote
-						? VISUAL_CONFIG.startingNoteColor
-						: VISUAL_CONFIG.noteColor;
-				}
-				return VISUAL_CONFIG.noteColor;
-			})
+			.attr('fill', (d) => calculateNoteColor(d.note, startingNote, showRootHighlight, VISUAL_CONFIG))
 			.attr('stroke', VISUAL_CONFIG.noteStrokeColor)
 			.attr('stroke-width', VISUAL_CONFIG.noteStrokeWidth)
 			.attr('cursor', 'pointer')
@@ -599,14 +649,7 @@
 			})
 			.on('mouseout', function (event, d) {
 				if (isDragging) handleElementStop(`note-${d.id}`);
-				// Restore original color based on whether it's the starting note and root highlighting is enabled
-				let originalColor: string = VISUAL_CONFIG.noteColor;
-				if (showRootHighlight) {
-					const noteNameOnly = d.note.replace(/[0-9]/g, '');
-					originalColor = noteNameOnly === startingNote
-						? VISUAL_CONFIG.startingNoteColor
-						: VISUAL_CONFIG.noteColor;
-				}
+				const originalColor = calculateNoteColor(d.note, startingNote, showRootHighlight, VISUAL_CONFIG);
 				d3.select(this).attr('fill', originalColor).attr('r', VISUAL_CONFIG.noteRadius);
 			})
 			.on('mousedown', function (event, d) {
@@ -639,22 +682,24 @@
 				.attr('class', 'legend')
 				.attr('transform', `translate(${width - 150}, 20)`);
 
-			legend
-				.append('rect')
-				.attr('width', 20)
-				.attr('height', 20)
-				.attr('fill', VISUAL_CONFIG.majorTriangleColor)
-				.attr('opacity', VISUAL_CONFIG.triangleOpacity);
-			legend.append('text').attr('x', 30).attr('y', 15).attr('font-size', '14px').text('Major');
-
-			legend
-				.append('rect')
-				.attr('y', 30)
-				.attr('width', 20)
-				.attr('height', 20)
-				.attr('fill', VISUAL_CONFIG.minorTriangleColor)
-				.attr('opacity', VISUAL_CONFIG.triangleOpacity);
-			legend.append('text').attr('x', 30).attr('y', 45).attr('font-size', '14px').text('Minor');
+			const legendData = createLegendData(VISUAL_CONFIG);
+			
+			legendData.forEach((item) => {
+				legend
+					.append('rect')
+					.attr('y', item.y)
+					.attr('width', 20)
+					.attr('height', 20)
+					.attr('fill', item.color)
+					.attr('opacity', VISUAL_CONFIG.triangleOpacity);
+					
+				legend
+					.append('text')
+					.attr('x', 30)
+					.attr('y', item.y + 15)
+					.attr('font-size', '14px')
+					.text(item.label);
+			});
 		}
 	};
 
@@ -668,20 +713,14 @@
 		if (polySynth) {
 			polySynth.dispose();
 		}
-		polySynth = new Tone.PolySynth(Tone.FMSynth, {
-			harmonicity: 3,
-			modulationIndex: 10,
-			oscillator: { type: oscillatorType },
-			envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.5 },
-			modulation: { type: 'square' },
-			modulationEnvelope: { attack: 0.2, decay: 0.01, sustain: 1, release: 0.5 }
-		}).toDestination();
+		polySynth = new Tone.PolySynth(Tone.FMSynth, createPolySynthConfig(oscillatorType)).toDestination();
 	};
 
 	const createZoom = () => {
 		if (!svgElement) return;
 		const svg = d3.select(svgElement);
-		const zoom = d3.zoom()
+		const zoom = d3
+			.zoom()
 			.scaleExtent([0.5, 3])
 			.on('zoom', (event) => {
 				const { transform } = event;
@@ -735,20 +774,16 @@
 			createTonnetz();
 			const newMainGroup = svg.select('g.main-group');
 			if (!newMainGroup.empty()) {
-				newMainGroup.attr('transform', `translate(${width / 2}, ${height / 2}) scale(${zoomScale})`);
+				newMainGroup.attr(
+					'transform',
+					`translate(${width / 2}, ${height / 2}) scale(${zoomScale})`
+				);
 			}
 		}
 	};
 
 	onMount(() => {
-		polySynth = new Tone.PolySynth(Tone.FMSynth, {
-			harmonicity: 3,
-			modulationIndex: 10,
-			oscillator: { type: oscillatorType },
-			envelope: { attack: 0.01, decay: 0.01, sustain: 1, release: 0.5 },
-			modulation: { type: 'square' },
-			modulationEnvelope: { attack: 0.2, decay: 0.01, sustain: 1, release: 0.5 }
-		}).toDestination();
+		polySynth = new Tone.PolySynth(Tone.FMSynth, createPolySynthConfig(oscillatorType)).toDestination();
 
 		createTonnetz();
 
@@ -763,8 +798,6 @@
 		return () => document.removeEventListener('mouseup', handleGlobalMouseUp);
 	});
 </script>
-
-
 
 <div class="tonnetz-container">
 	<svg bind:this={svgElement}></svg>
