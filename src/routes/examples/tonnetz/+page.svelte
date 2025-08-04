@@ -103,15 +103,15 @@
 </div>
 
 <!-- Interactive Tonnetz Component -->
-<Tonnetz 
-	width={800} 
-	height={600} 
-	initialOctaves={2} 
-	initialBaseOctave={4} 
-	initialGridRadius={3} 
-	initialZoom={1.0} 
-	initialOscillatorType="sawtooth" 
-	showControls={true} 
+<Tonnetz
+	width={800}
+	height={600}
+	initialOctaves={2}
+	initialBaseOctave={4}
+	initialGridRadius={3}
+	initialZoom={1.0}
+	initialOscillatorType="sawtooth"
+	showControls={true}
 />
 
 <style>
