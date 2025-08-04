@@ -16,6 +16,7 @@
 		showMajorTriangles: boolean;
 		showMinorTriangles: boolean;
 		triadFilter: (string | number)[];
+		showUniqueTriadsOnly: boolean;
 	}
 </script>
 
@@ -262,6 +263,18 @@
 			placeholder="e.g., 1, 5, 2 or C, G, D"
 			style="min-width: 150px;"
 		/>
+	</div>
+	
+	<div class="control-group">
+		<label for="showUniqueTriadsOnly">
+			<input
+				id="showUniqueTriadsOnly"
+				type="checkbox"
+				bind:checked={controls.showUniqueTriadsOnly}
+				on:change={handleRegenerate}
+			/>
+			Show Unique Triads Only
+		</label>
 	</div>
 </div>
 

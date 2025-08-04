@@ -16,6 +16,7 @@
 		showMajorTriangles: boolean;
 		showMinorTriangles: boolean;
 		triadFilter: (string | number)[];
+		showUniqueTriadsOnly: boolean;
 	}
 </script>
 
@@ -64,7 +65,8 @@
 		showOnlyKeyTriangles: false,
 		showMajorTriangles: true,
 		showMinorTriangles: true,
-		triadFilter: []
+		triadFilter: [],
+		showUniqueTriadsOnly: false
 	};
 
 	// State
@@ -90,6 +92,7 @@
 	$: showMajorTriangles = controls?.showMajorTriangles;
 	$: showMinorTriangles = controls?.showMinorTriangles;
 	$: triadFilter = controls?.triadFilter || [];
+	$: showUniqueTriadsOnly = controls?.showUniqueTriadsOnly || false;
 
 	// Visual configuration
 	const VISUAL_CONFIG = {
@@ -564,17 +567,22 @@
 				}
 			}
 			
-			// Check if filter matches any note in the triad
-			const triangleNotes = triangle.notes.map(note => 
-				note.replace(/[0-9]/g, '').toUpperCase()
-			);
-			for (const filterNote of normalizedFilters) {
-				if (triangleNotes.includes(filterNote)) {
-					return true;
-				}
-			}
-			
+			// Only fall back to "contains note" matching if no root matches were found
+			// This fixes the issue where "C" would match all triads containing C
 			return false;
+		});
+	};
+
+	// Filter to show only unique triads (remove duplicates based on chord name)
+	const filterUniqueTriads = (triangles: Triangle[]): Triangle[] => {
+		const seen = new Set<string>();
+		return triangles.filter((triangle) => {
+			const key = triangle.chordName;
+			if (seen.has(key)) {
+				return false;
+			}
+			seen.add(key);
+			return true;
 		});
 	};
 
@@ -584,11 +592,15 @@
 		showMajorTriangles: boolean, 
 		showMinorTriangles: boolean,
 		triadFilter: (string | number)[] = [],
-		startingNote: string
+		startingNote: string,
+		showUniqueTriadsOnly: boolean = false
 	): Triangle[] => {
 		let filtered = filterTrianglesByKey(triangles, showOnlyKeyTriangles);
 		filtered = filterTrianglesByQuality(filtered, showMajorTriangles, showMinorTriangles);
 		filtered = filterTriadsByFilter(filtered, triadFilter, startingNote);
+		if (showUniqueTriadsOnly) {
+			filtered = filterUniqueTriads(filtered);
+		}
 		return filtered;
 	};
 
@@ -619,7 +631,8 @@
 				showMajorTriangles, 
 				showMinorTriangles,
 				triadFilter,
-				startingNote
+				startingNote,
+				showUniqueTriadsOnly
 			);
 
 			g.selectAll('.triangle')
@@ -666,7 +679,8 @@
 			showMajorTriangles, 
 			showMinorTriangles,
 			triadFilter,
-			startingNote
+			startingNote,
+			showUniqueTriadsOnly
 		);
 
 		// Draw chord names if enabled

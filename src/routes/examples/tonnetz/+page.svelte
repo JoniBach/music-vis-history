@@ -21,7 +21,8 @@
 		showOnlyKeyTriangles: false,
 		showMajorTriangles: true,
 		showMinorTriangles: true,
-		triadFilter: []
+		triadFilter: [],
+		showUniqueTriadsOnly: false
 	};
 
 	// Component references
