@@ -15,6 +15,7 @@
 		showOnlyKeyTriangles: boolean;
 		showMajorTriangles: boolean;
 		showMinorTriangles: boolean;
+		triadFilter: (string | number)[];
 	}
 </script>
 
@@ -62,7 +63,8 @@
 		showLegend: true,
 		showOnlyKeyTriangles: false,
 		showMajorTriangles: true,
-		showMinorTriangles: true
+		showMinorTriangles: true,
+		triadFilter: []
 	};
 
 	// State
@@ -87,6 +89,7 @@
 	$: showOnlyKeyTriangles = controls?.showOnlyKeyTriangles;
 	$: showMajorTriangles = controls?.showMajorTriangles;
 	$: showMinorTriangles = controls?.showMinorTriangles;
+	$: triadFilter = controls?.triadFilter || [];
 
 	// Visual configuration
 	const VISUAL_CONFIG = {
@@ -498,14 +501,94 @@
 		});
 	};
 
+	// Pure triad filtering by scale degrees or note names
+	const normalizeFilterValue = (value: string | number): string => {
+		if (typeof value === 'number') {
+			// Convert scale degree to string (1 -> '1', 5 -> '5', etc.)
+			return value.toString();
+		}
+		// Normalize note name (remove case sensitivity and octave numbers)
+		return value.replace(/[0-9]/g, '').toUpperCase();
+	};
+
+	// Calculate scale degree from root note relative to starting note
+	const calculateScaleDegree = (rootNote: string, startingNote: string): string => {
+		const noteToSemitone = (note: string): number => {
+			const index = NOTE_NAMES.indexOf(note as (typeof NOTE_NAMES)[number]);
+			return index === -1 ? 0 : index;
+		};
+		
+		const rootSemitone = noteToSemitone(rootNote);
+		const startingSemitone = noteToSemitone(startingNote);
+		const degree = ((rootSemitone - startingSemitone + 12) % 12);
+		
+		// Map semitone intervals to scale degrees
+		const degreeMap: Record<number, string> = {
+			0: '1', // Tonic
+			2: '2', // Supertonic
+			4: '3', // Mediant
+			5: '4', // Subdominant
+			7: '5', // Dominant
+			9: '6', // Submediant
+			11: '7' // Leading tone
+		};
+		
+		return degreeMap[degree] || '';
+	};
+
+	const extractRootNoteFromChord = (chordName: string): string => {
+		if (!chordName || chordName === '-') return '';
+		// Extract root note from chord name (remove quality symbols)
+		const cleaned = chordName.replace(/[°+\-]/g, '');
+		// Handle both uppercase (major) and lowercase (minor) chord names
+		return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).replace(/[a-z]/g, '');
+	};
+
+	const filterTriadsByFilter = (triangles: Triangle[], triadFilter: (string | number)[], startingNote: string): Triangle[] => {
+		if (!triadFilter || triadFilter.length === 0) return triangles;
+		
+		const normalizedFilters = triadFilter.map(normalizeFilterValue);
+		
+		return triangles.filter((triangle) => {
+			// Check if filter matches scale degree (calculated from root note)
+			const rootNote = extractRootNoteFromChord(triangle.chordName);
+			if (rootNote) {
+				const scaleDegree = calculateScaleDegree(rootNote, startingNote);
+				if (scaleDegree && normalizedFilters.includes(scaleDegree)) {
+					return true;
+				}
+				
+				// Check if filter matches root note directly
+				if (normalizedFilters.includes(rootNote)) {
+					return true;
+				}
+			}
+			
+			// Check if filter matches any note in the triad
+			const triangleNotes = triangle.notes.map(note => 
+				note.replace(/[0-9]/g, '').toUpperCase()
+			);
+			for (const filterNote of normalizedFilters) {
+				if (triangleNotes.includes(filterNote)) {
+					return true;
+				}
+			}
+			
+			return false;
+		});
+	};
+
 	const filterTriangles = (
 		triangles: Triangle[], 
 		showOnlyKeyTriangles: boolean, 
 		showMajorTriangles: boolean, 
-		showMinorTriangles: boolean
+		showMinorTriangles: boolean,
+		triadFilter: (string | number)[] = [],
+		startingNote: string
 	): Triangle[] => {
 		let filtered = filterTrianglesByKey(triangles, showOnlyKeyTriangles);
 		filtered = filterTrianglesByQuality(filtered, showMajorTriangles, showMinorTriangles);
+		filtered = filterTriadsByFilter(filtered, triadFilter, startingNote);
 		return filtered;
 	};
 
@@ -534,7 +617,9 @@
 				triangles, 
 				showOnlyKeyTriangles, 
 				showMajorTriangles, 
-				showMinorTriangles
+				showMinorTriangles,
+				triadFilter,
+				startingNote
 			);
 
 			g.selectAll('.triangle')
@@ -579,7 +664,9 @@
 			triangles, 
 			showOnlyKeyTriangles, 
 			showMajorTriangles, 
-			showMinorTriangles
+			showMinorTriangles,
+			triadFilter,
+			startingNote
 		);
 
 		// Draw chord names if enabled

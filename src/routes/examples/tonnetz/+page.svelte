@@ -20,7 +20,8 @@
 		showLegend: true,
 		showOnlyKeyTriangles: false,
 		showMajorTriangles: true,
-		showMinorTriangles: true
+		showMinorTriangles: true,
+		triadFilter: []
 	};
 
 	// Component references

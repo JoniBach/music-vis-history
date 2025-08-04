@@ -15,6 +15,7 @@
 		showOnlyKeyTriangles: boolean;
 		showMajorTriangles: boolean;
 		showMinorTriangles: boolean;
+		triadFilter: (string | number)[];
 	}
 </script>
 
@@ -45,6 +46,28 @@
 
 	const handleOscillatorChange = () => {
 		dispatch('oscillatorChange');
+	};
+
+	const handleTriadFilterChange = (event: Event) => {
+		const target = event.target as HTMLInputElement;
+		const inputValue = target.value.trim();
+		
+		if (!inputValue) {
+			controls.triadFilter = [];
+		} else {
+			// Parse comma-separated values, handling both numbers and note names
+			controls.triadFilter = inputValue
+				.split(',')
+				.map(item => item.trim())
+				.filter(item => item.length > 0)
+				.map(item => {
+					// Try to parse as number first, otherwise keep as string
+					const num = parseInt(item, 10);
+					return !isNaN(num) && num.toString() === item ? num : item;
+				});
+		}
+		
+		handleRegenerate();
 	};
 </script>
 
@@ -227,6 +250,18 @@
 			/>
 			Show Minor Triangles
 		</label>
+	</div>
+	
+	<div class="control-group">
+		<label for="triadFilter">Filter Triads:</label>
+		<input
+			id="triadFilter"
+			type="text"
+			value={controls.triadFilter.join(', ')}
+			on:input={handleTriadFilterChange}
+			placeholder="e.g., 1, 5, 2 or C, G, D"
+			style="min-width: 150px;"
+		/>
 	</div>
 </div>
 
