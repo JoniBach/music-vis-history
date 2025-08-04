@@ -19,6 +19,7 @@
 		triadFilter: (string | number)[];
 		showUniqueTriadsOnly: boolean;
 		showUniqueNotesOnly: boolean;
+		hideOrphanNotes: boolean;
 	}
 </script>
 
@@ -300,6 +301,18 @@
 				on:change={handleRegenerate}
 			/>
 			Show Unique Notes Only
+		</label>
+	</div>
+	
+	<div class="control-group">
+		<label for="hideOrphanNotes">
+			<input
+				id="hideOrphanNotes"
+				type="checkbox"
+				bind:checked={controls.hideOrphanNotes}
+				on:change={handleRegenerate}
+			/>
+			Hide Orphan Notes
 		</label>
 	</div>
 </div>

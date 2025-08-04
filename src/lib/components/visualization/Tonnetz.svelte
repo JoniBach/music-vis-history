@@ -19,6 +19,7 @@
 		triadFilter: (string | number)[];
 		showUniqueTriadsOnly: boolean;
 		showUniqueNotesOnly: boolean;
+		hideOrphanNotes: boolean;
 	}
 </script>
 
@@ -76,7 +77,8 @@
 		showMinorTriangles: true,
 		triadFilter: [],
 		showUniqueTriadsOnly: false,
-		showUniqueNotesOnly: false
+		showUniqueNotesOnly: false,
+		hideOrphanNotes: false
 	};
 
 	// State
@@ -106,6 +108,7 @@
 	$: triadFilter = controls?.triadFilter || [];
 	$: showUniqueTriadsOnly = controls?.showUniqueTriadsOnly || false;
 	$: showUniqueNotesOnly = controls?.showUniqueNotesOnly || false;
+	$: hideOrphanNotes = controls?.hideOrphanNotes || false;
 
 	// Visual configuration
 	const VISUAL_CONFIG = {
@@ -709,6 +712,25 @@
 		});
 	};
 
+	// Filter to hide orphan notes (notes not connected to any visible triangle)
+	const filterOrphanNotes = (points: Point[], visibleTriangles: Triangle[]): Point[] => {
+		if (visibleTriangles.length === 0) {
+			// If no triangles are visible, show all notes
+			return points;
+		}
+		
+		// Create a set of all point IDs that are connected to visible triangles
+		const connectedPointIds = new Set<string>();
+		visibleTriangles.forEach(triangle => {
+			triangle.points.forEach(pointId => {
+				connectedPointIds.add(pointId);
+			});
+		});
+		
+		// Only keep points that are connected to at least one visible triangle
+		return points.filter(point => connectedPointIds.has(point.id));
+	};
+
 	const filterTriangles = (
 		triangles: Triangle[],
 		showOnlyKeyTriangles: boolean,
@@ -913,7 +935,28 @@
 		}
 
 		// Draw notes
-		const displayPoints = showUniqueNotesOnly ? filterUniqueNotes(points) : points;
+		let displayPoints = points;
+		
+		// Apply orphan notes filter if enabled (must be done before unique notes filter)
+		if (hideOrphanNotes) {
+			// Get the filtered triangles to determine which notes are connected
+			const visibleTriangles = filterTriangles(
+				triangles,
+				showOnlyKeyTriangles,
+				showMajorTriangles,
+				showMinorTriangles,
+				triadFilter,
+				startingNote,
+				showUniqueTriadsOnly
+			);
+			displayPoints = filterOrphanNotes(displayPoints, visibleTriangles);
+		}
+		
+		// Apply unique notes filter if enabled
+		if (showUniqueNotesOnly) {
+			displayPoints = filterUniqueNotes(displayPoints);
+		}
+		
 		const noteGroups = g
 			.selectAll('.note-group')
 			.data(displayPoints)

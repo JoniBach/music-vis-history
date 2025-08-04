@@ -24,7 +24,8 @@
 		showMinorTriangles: true,
 		triadFilter: [],
 		showUniqueTriadsOnly: true,
-		showUniqueNotesOnly: false
+		showUniqueNotesOnly: false,
+		hideOrphanNotes: true
 	};
 
 	// Component references
