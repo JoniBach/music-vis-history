@@ -6,23 +6,25 @@
 
 	// State management for controls - now at page level
 	let controls: TonnetzControlsData = {
-		numOctaves: 2,
+		numOctaves: 1,
 		baseOctave: 4,
-		gridRadius: 3,
-		zoomScale: 1.0,
+		gridRadius: 2,
+		zoomScale: 1.5,
 		startingNote: 'C',
 		oscillatorType: 'sawtooth',
 		showChordNames: true,
 		showRomanNumerals: true,
 		showRootHighlight: true,
 		showTriangles: true,
+		showDyads: true,
 		showNoteLabels: true,
 		showLegend: true,
 		showOnlyKeyTriangles: false,
 		showMajorTriangles: true,
 		showMinorTriangles: true,
 		triadFilter: [],
-		showUniqueTriadsOnly: false
+		showUniqueTriadsOnly: true,
+		showUniqueNotesOnly: false
 	};
 
 	// Component references

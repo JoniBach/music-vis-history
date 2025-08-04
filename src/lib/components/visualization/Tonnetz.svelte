@@ -10,6 +10,7 @@
 		showRomanNumerals: boolean;
 		showRootHighlight: boolean;
 		showTriangles: boolean;
+		showDyads: boolean;
 		showNoteLabels: boolean;
 		showLegend: boolean;
 		showOnlyKeyTriangles: boolean;
@@ -17,6 +18,7 @@
 		showMinorTriangles: boolean;
 		triadFilter: (string | number)[];
 		showUniqueTriadsOnly: boolean;
+		showUniqueNotesOnly: boolean;
 	}
 </script>
 
@@ -44,6 +46,12 @@
 		id: string;
 	};
 
+	type Edge = {
+		id: string;
+		point1: string;
+		point2: string;
+	};
+
 	type HexPosition = { q: number; r: number };
 
 	// Component props
@@ -60,13 +68,15 @@
 		showRomanNumerals: true,
 		showRootHighlight: true,
 		showTriangles: true,
+		showDyads: true,
 		showNoteLabels: true,
 		showLegend: true,
 		showOnlyKeyTriangles: false,
 		showMajorTriangles: true,
 		showMinorTriangles: true,
 		triadFilter: [],
-		showUniqueTriadsOnly: false
+		showUniqueTriadsOnly: false,
+		showUniqueNotesOnly: false
 	};
 
 	// State
@@ -74,6 +84,7 @@
 	let polySynth: Tone.PolySynth;
 	let isDragging = false;
 	let currentlyPlayingElements = new Set<string>();
+	let currentlyPlayingNotes = new Set<string>(); // Track which note frequencies are currently playing
 
 	// Reactive statements to update internal state when controls change
 	$: numOctaves = controls.numOctaves;
@@ -86,6 +97,7 @@
 	$: showRomanNumerals = controls.showRomanNumerals;
 	$: showRootHighlight = controls.showRootHighlight;
 	$: showTriangles = controls.showTriangles;
+	$: showDyads = controls.showDyads;
 	$: showNoteLabels = controls.showNoteLabels;
 	$: showLegend = controls.showLegend;
 	$: showOnlyKeyTriangles = controls?.showOnlyKeyTriangles;
@@ -93,6 +105,7 @@
 	$: showMinorTriangles = controls?.showMinorTriangles;
 	$: triadFilter = controls?.triadFilter || [];
 	$: showUniqueTriadsOnly = controls?.showUniqueTriadsOnly || false;
+	$: showUniqueNotesOnly = controls?.showUniqueNotesOnly || false;
 
 	// Visual configuration
 	const VISUAL_CONFIG = {
@@ -106,7 +119,10 @@
 		noteColor: '#ffffff',
 		noteStrokeColor: '#333',
 		chordTextColor: '#ffffff',
-		startingNoteColor: '#ffeb3b' // Yellow for starting note
+		startingNoteColor: '#ffeb3b', // Yellow for starting note
+		edgeStrokeWidth: 4,
+		edgeColor: '#666',
+		edgeHoverColor: '#333'
 	} as const;
 
 	// Constants
@@ -159,7 +175,12 @@
 		return BASE_FREQUENCY * Math.pow(2, semitonesFromC4 / 12);
 	};
 
-	const calculateNote = (pos: HexPosition, startingNote: string, baseOctave: number, numOctaves: number) => {
+	const calculateNote = (
+		pos: HexPosition,
+		startingNote: string,
+		baseOctave: number,
+		numOctaves: number
+	) => {
 		const startingOffset = getStartingNoteOffset(startingNote);
 		const totalSemitones = pos.q * 7 + pos.r * 4;
 		const noteIndex = calculateSemitoneIndex(totalSemitones, startingOffset);
@@ -318,7 +339,13 @@
 		return { chordName, romanNumeral };
 	};
 
-	const createPoint = (pos: HexPosition, hexRadius: number, startingNote: string, baseOctave: number, numOctaves: number): Point => {
+	const createPoint = (
+		pos: HexPosition,
+		hexRadius: number,
+		startingNote: string,
+		baseOctave: number,
+		numOctaves: number
+	): Point => {
 		const pixel = hexToPixel(pos, hexRadius);
 		const noteInfo = calculateNote(pos, startingNote, baseOctave, numOctaves);
 		return {
@@ -392,6 +419,34 @@
 		return triangles;
 	};
 
+	const generateEdges = (triangles: Triangle[], pointMap: Map<string, Point>): Edge[] => {
+		const edgeMap = new Map<string, Edge>();
+
+		triangles.forEach((triangle) => {
+			// Generate all possible edges from triangle points (3 edges per triangle)
+			const points = triangle.points;
+			for (let i = 0; i < points.length; i++) {
+				for (let j = i + 1; j < points.length; j++) {
+					const point1 = points[i];
+					const point2 = points[j];
+
+					// Create consistent edge ID (sorted to avoid duplicates)
+					const edgeId = [point1, point2].sort().join('-');
+
+					if (!edgeMap.has(edgeId) && pointMap.has(point1) && pointMap.has(point2)) {
+						edgeMap.set(edgeId, {
+							id: edgeId,
+							point1,
+							point2
+						});
+					}
+				}
+			}
+		});
+
+		return Array.from(edgeMap.values());
+	};
+
 	// Pure audio configuration function
 	const createPolySynthConfig = (oscillatorType: 'sine' | 'square' | 'sawtooth' | 'triangle') => ({
 		harmonicity: 3,
@@ -408,16 +463,14 @@
 	};
 
 	const calculateNoteColor = (
-		noteWithOctave: string, 
-		startingNote: string, 
-		showRootHighlight: boolean, 
+		noteWithOctave: string,
+		startingNote: string,
+		showRootHighlight: boolean,
 		visualConfig: typeof VISUAL_CONFIG
 	): string => {
 		if (!showRootHighlight) return visualConfig.noteColor;
 		const noteNameOnly = getNoteNameOnly(noteWithOctave);
-		return noteNameOnly === startingNote 
-			? visualConfig.startingNoteColor 
-			: visualConfig.noteColor;
+		return noteNameOnly === startingNote ? visualConfig.startingNoteColor : visualConfig.noteColor;
 	};
 
 	const createTrianglePoints = (triangle: Triangle, points: Point[]): string => {
@@ -457,9 +510,55 @@
 		try {
 			polySynth.releaseAll();
 			currentlyPlayingElements.clear();
+			
+			// Unhighlight all notes
+			const { points } = generateTonnetzData();
+			unhighlightAllNotes(points);
 		} catch (error) {
 			console.error('Error stopping all notes:', error);
 		}
+	};
+
+	// Note highlighting functions
+	const highlightPlayingNotes = (frequencies: number[], points: Point[]) => {
+		if (!svgElement) return;
+		
+		frequencies.forEach(frequency => {
+			// Find ALL points with matching frequency (there might be multiple instances)
+			const matchingPoints = points.filter(p => p.frequency === frequency);
+			matchingPoints.forEach(point => {
+				currentlyPlayingNotes.add(point.id);
+				const noteElement = d3.select(svgElement).select(`circle[data-note-id="${point.id}"]`);
+				if (!noteElement.empty()) {
+					noteElement
+						.attr('fill', '#28a745') // Green color for playing notes
+						.attr('r', VISUAL_CONFIG.noteRadius + 4); // Slightly larger
+				}
+			});
+		});
+	};
+
+	const unhighlightAllNotes = (points: Point[]) => {
+		if (!svgElement) return;
+		
+		currentlyPlayingNotes.forEach(noteId => {
+			const point = points.find(p => p.id === noteId);
+			if (point) {
+				const noteElement = d3.select(svgElement).select(`circle[data-note-id="${noteId}"]`);
+				if (!noteElement.empty()) {
+					const originalColor = calculateNoteColor(
+						point.note,
+						startingNote,
+						showRootHighlight,
+						VISUAL_CONFIG
+					);
+					noteElement
+						.attr('fill', originalColor)
+						.attr('r', VISUAL_CONFIG.noteRadius);
+				}
+			}
+		});
+		currentlyPlayingNotes.clear();
 	};
 
 	// Event handlers
@@ -472,6 +571,10 @@
 		if (!currentlyPlayingElements.has(elementId)) {
 			currentlyPlayingElements.add(elementId);
 			startChord(frequencies);
+			
+			// Highlight the notes being played
+			const { points } = generateTonnetzData();
+			highlightPlayingNotes(frequencies, points);
 		}
 	};
 
@@ -484,7 +587,10 @@
 	};
 
 	// Pure triangle filtering functions
-	const filterTrianglesByKey = (triangles: Triangle[], showOnlyKeyTriangles: boolean): Triangle[] => {
+	const filterTrianglesByKey = (
+		triangles: Triangle[],
+		showOnlyKeyTriangles: boolean
+	): Triangle[] => {
 		if (!showOnlyKeyTriangles) return triangles;
 		return triangles.filter(
 			(t) => t.romanNumeral && t.romanNumeral !== '-' && t.romanNumeral !== '?'
@@ -492,8 +598,8 @@
 	};
 
 	const filterTrianglesByQuality = (
-		triangles: Triangle[], 
-		showMajorTriangles: boolean, 
+		triangles: Triangle[],
+		showMajorTriangles: boolean,
 		showMinorTriangles: boolean
 	): Triangle[] => {
 		if (showMajorTriangles && showMinorTriangles) return triangles;
@@ -520,11 +626,11 @@
 			const index = NOTE_NAMES.indexOf(note as (typeof NOTE_NAMES)[number]);
 			return index === -1 ? 0 : index;
 		};
-		
+
 		const rootSemitone = noteToSemitone(rootNote);
 		const startingSemitone = noteToSemitone(startingNote);
-		const degree = ((rootSemitone - startingSemitone + 12) % 12);
-		
+		const degree = (rootSemitone - startingSemitone + 12) % 12;
+
 		// Map semitone intervals to scale degrees
 		const degreeMap: Record<number, string> = {
 			0: '1', // Tonic
@@ -535,7 +641,7 @@
 			9: '6', // Submediant
 			11: '7' // Leading tone
 		};
-		
+
 		return degreeMap[degree] || '';
 	};
 
@@ -547,11 +653,15 @@
 		return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).replace(/[a-z]/g, '');
 	};
 
-	const filterTriadsByFilter = (triangles: Triangle[], triadFilter: (string | number)[], startingNote: string): Triangle[] => {
+	const filterTriadsByFilter = (
+		triangles: Triangle[],
+		triadFilter: (string | number)[],
+		startingNote: string
+	): Triangle[] => {
 		if (!triadFilter || triadFilter.length === 0) return triangles;
-		
+
 		const normalizedFilters = triadFilter.map(normalizeFilterValue);
-		
+
 		return triangles.filter((triangle) => {
 			// Check if filter matches scale degree (calculated from root note)
 			const rootNote = extractRootNoteFromChord(triangle.chordName);
@@ -560,13 +670,13 @@
 				if (scaleDegree && normalizedFilters.includes(scaleDegree)) {
 					return true;
 				}
-				
+
 				// Check if filter matches root note directly
 				if (normalizedFilters.includes(rootNote)) {
 					return true;
 				}
 			}
-			
+
 			// Only fall back to "contains note" matching if no root matches were found
 			// This fixes the issue where "C" would match all triads containing C
 			return false;
@@ -586,10 +696,23 @@
 		});
 	};
 
+	// Filter to show only unique notes (remove duplicates based on note name without octave)
+	const filterUniqueNotes = (points: Point[]): Point[] => {
+		const seen = new Set<string>();
+		return points.filter((point) => {
+			const noteNameOnly = getNoteNameOnly(point.note);
+			if (seen.has(noteNameOnly)) {
+				return false;
+			}
+			seen.add(noteNameOnly);
+			return true;
+		});
+	};
+
 	const filterTriangles = (
-		triangles: Triangle[], 
-		showOnlyKeyTriangles: boolean, 
-		showMajorTriangles: boolean, 
+		triangles: Triangle[],
+		showOnlyKeyTriangles: boolean,
+		showMajorTriangles: boolean,
 		showMinorTriangles: boolean,
 		triadFilter: (string | number)[] = [],
 		startingNote: string,
@@ -607,15 +730,18 @@
 	// Main generation function
 	const generateTonnetzData = () => {
 		const positions = generateHexPositions(gridRadius);
-		const points = positions.map(pos => createPoint(pos, HEX_RADIUS, startingNote, baseOctave, numOctaves));
+		const points = positions.map((pos) =>
+			createPoint(pos, HEX_RADIUS, startingNote, baseOctave, numOctaves)
+		);
 		const pointMap = new Map(points.map((p) => [p.id, p]));
 		const triangles = generateTriangles(positions, pointMap);
-		return { points, triangles };
+		const edges = generateEdges(triangles, pointMap);
+		return { points, triangles, edges };
 	};
 
 	// Visualization functions
 	const createTonnetz = () => {
-		const { points, triangles } = generateTonnetzData();
+		const { points, triangles, edges } = generateTonnetzData();
 		const svg = d3.select(svgElement).attr('width', width).attr('height', height);
 
 		const g = svg
@@ -626,9 +752,9 @@
 		// Draw triangles if enabled
 		if (showTriangles) {
 			const filteredTriangles = filterTriangles(
-				triangles, 
-				showOnlyKeyTriangles, 
-				showMajorTriangles, 
+				triangles,
+				showOnlyKeyTriangles,
+				showMajorTriangles,
 				showMinorTriangles,
 				triadFilter,
 				startingNote,
@@ -672,11 +798,72 @@
 				});
 		}
 
+		// Draw edges (only for visible triangles and if dyads are enabled)
+		if (showTriangles && showDyads) {
+			const filteredTriangles = filterTriangles(
+				triangles,
+				showOnlyKeyTriangles,
+				showMajorTriangles,
+				showMinorTriangles,
+				triadFilter,
+				startingNote,
+				showUniqueTriadsOnly
+			);
+
+			// Generate edges only for filtered triangles
+			const filteredEdges = generateEdges(filteredTriangles, new Map(points.map((p) => [p.id, p])));
+
+			g.selectAll('.edge')
+				.data(filteredEdges)
+				.enter()
+				.append('line')
+				.attr('class', 'edge')
+				.attr('x1', (d) => points.find((p) => p.id === d.point1)!.x)
+				.attr('y1', (d) => points.find((p) => p.id === d.point1)!.y)
+				.attr('x2', (d) => points.find((p) => p.id === d.point2)!.x)
+				.attr('y2', (d) => points.find((p) => p.id === d.point2)!.y)
+				.attr('stroke', VISUAL_CONFIG.edgeColor)
+				.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth)
+				.attr('cursor', 'pointer')
+				.on('mouseover', function (event, d) {
+					if (isDragging) {
+						const point1 = points.find((p) => p.id === d.point1);
+						const point2 = points.find((p) => p.id === d.point2);
+						if (point1 && point2) {
+							const frequencies = [point1.frequency, point2.frequency];
+							handleElementPlay(`edge-${d.id}`, frequencies);
+						}
+					}
+					d3.select(this)
+						.attr('stroke', VISUAL_CONFIG.edgeHoverColor)
+						.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth + 2);
+				})
+				.on('mouseout', function (event, d) {
+					if (isDragging) handleElementStop(`edge-${d.id}`);
+					d3.select(this)
+						.attr('stroke', VISUAL_CONFIG.edgeColor)
+						.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth);
+				})
+				.on('mousedown', function (event, d) {
+					event.preventDefault();
+					stopAllNotes();
+					isDragging = true;
+					const point1 = points.find((p) => p.id === d.point1);
+					const point2 = points.find((p) => p.id === d.point2);
+					if (point1 && point2) {
+						const frequencies = [point1.frequency, point2.frequency];
+						handleElementPlay(`edge-${d.id}`, frequencies);
+					}
+					d3.select(this)
+						.attr('stroke', VISUAL_CONFIG.edgeHoverColor)
+						.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth + 2);
+				});
+		}
 		// Filter triangles for chord/Roman numeral display
 		const displayTriangles = filterTriangles(
-			triangles, 
-			showOnlyKeyTriangles, 
-			showMajorTriangles, 
+			triangles,
+			showOnlyKeyTriangles,
+			showMajorTriangles,
 			showMinorTriangles,
 			triadFilter,
 			startingNote,
@@ -718,7 +905,7 @@
 				.attr('text-anchor', 'middle')
 				.attr('dominant-baseline', 'central')
 				.attr('font-size', '10px')
-				.attr('fill', '#666666')
+				.attr('fill', '#333')
 				.attr('font-weight', 'normal')
 				.attr('pointer-events', 'none')
 				.style('text-shadow', '1px 1px 2px rgba(255,255,255,0.8)')
@@ -726,9 +913,10 @@
 		}
 
 		// Draw notes
+		const displayPoints = showUniqueNotesOnly ? filterUniqueNotes(points) : points;
 		const noteGroups = g
 			.selectAll('.note-group')
-			.data(points)
+			.data(displayPoints)
 			.enter()
 			.append('g')
 			.attr('class', 'note-group');
@@ -738,10 +926,13 @@
 			.attr('cx', (d) => d.x)
 			.attr('cy', (d) => d.y)
 			.attr('r', VISUAL_CONFIG.noteRadius)
-			.attr('fill', (d) => calculateNoteColor(d.note, startingNote, showRootHighlight, VISUAL_CONFIG))
+			.attr('fill', (d) =>
+				calculateNoteColor(d.note, startingNote, showRootHighlight, VISUAL_CONFIG)
+			)
 			.attr('stroke', VISUAL_CONFIG.noteStrokeColor)
 			.attr('stroke-width', VISUAL_CONFIG.noteStrokeWidth)
 			.attr('cursor', 'pointer')
+			.attr('data-note-id', (d) => d.id) // Add data attribute for highlighting selection
 			.on('mouseover', function (event, d) {
 				if (isDragging) handleElementPlay(`note-${d.id}`, [d.frequency]);
 				d3.select(this)
@@ -750,7 +941,12 @@
 			})
 			.on('mouseout', function (event, d) {
 				if (isDragging) handleElementStop(`note-${d.id}`);
-				const originalColor = calculateNoteColor(d.note, startingNote, showRootHighlight, VISUAL_CONFIG);
+				const originalColor = calculateNoteColor(
+					d.note,
+					startingNote,
+					showRootHighlight,
+					VISUAL_CONFIG
+				);
 				d3.select(this).attr('fill', originalColor).attr('r', VISUAL_CONFIG.noteRadius);
 			})
 			.on('mousedown', function (event, d) {
@@ -784,7 +980,7 @@
 				.attr('transform', `translate(${width - 150}, 20)`);
 
 			const legendData = createLegendData(VISUAL_CONFIG);
-			
+
 			legendData.forEach((item) => {
 				legend
 					.append('rect')
@@ -793,7 +989,7 @@
 					.attr('height', 20)
 					.attr('fill', item.color)
 					.attr('opacity', VISUAL_CONFIG.triangleOpacity);
-					
+
 				legend
 					.append('text')
 					.attr('x', 30)
@@ -814,7 +1010,10 @@
 		if (polySynth) {
 			polySynth.dispose();
 		}
-		polySynth = new Tone.PolySynth(Tone.FMSynth, createPolySynthConfig(oscillatorType)).toDestination();
+		polySynth = new Tone.PolySynth(
+			Tone.FMSynth,
+			createPolySynthConfig(oscillatorType)
+		).toDestination();
 	};
 
 	const createZoom = () => {
@@ -884,7 +1083,10 @@
 	};
 
 	onMount(() => {
-		polySynth = new Tone.PolySynth(Tone.FMSynth, createPolySynthConfig(oscillatorType)).toDestination();
+		polySynth = new Tone.PolySynth(
+			Tone.FMSynth,
+			createPolySynthConfig(oscillatorType)
+		).toDestination();
 
 		createTonnetz();
 

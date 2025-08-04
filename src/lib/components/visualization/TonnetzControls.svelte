@@ -10,6 +10,7 @@
 		showRomanNumerals: boolean;
 		showRootHighlight: boolean;
 		showTriangles: boolean;
+		showDyads: boolean;
 		showNoteLabels: boolean;
 		showLegend: boolean;
 		showOnlyKeyTriangles: boolean;
@@ -17,6 +18,7 @@
 		showMinorTriangles: boolean;
 		triadFilter: (string | number)[];
 		showUniqueTriadsOnly: boolean;
+		showUniqueNotesOnly: boolean;
 	}
 </script>
 
@@ -194,6 +196,18 @@
 	</div>
 	
 	<div class="control-group">
+		<label for="showDyads">
+			<input
+				id="showDyads"
+				type="checkbox"
+				bind:checked={controls.showDyads}
+				on:change={handleRegenerate}
+			/>
+			Show Dyads
+		</label>
+	</div>
+	
+	<div class="control-group">
 		<label for="showNoteLabels">
 			<input
 				id="showNoteLabels"
@@ -274,6 +288,18 @@
 				on:change={handleRegenerate}
 			/>
 			Show Unique Triads Only
+		</label>
+	</div>
+	
+	<div class="control-group">
+		<label for="showUniqueNotesOnly">
+			<input
+				id="showUniqueNotesOnly"
+				type="checkbox"
+				bind:checked={controls.showUniqueNotesOnly}
+				on:change={handleRegenerate}
+			/>
+			Show Unique Notes Only
 		</label>
 	</div>
 </div>
