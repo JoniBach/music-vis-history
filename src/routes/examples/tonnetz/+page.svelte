@@ -1,5 +1,47 @@
 <script lang="ts">
 	import Tonnetz from '$lib/components/visualization/Tonnetz.svelte';
+	import TonnetzControls, { type TonnetzControlsData } from '$lib/components/visualization/TonnetzControls.svelte';
+
+	// State management for controls - now at page level
+	let controls: TonnetzControlsData = {
+		numOctaves: 2,
+		baseOctave: 4,
+		gridRadius: 3,
+		zoomScale: 1.0,
+		startingNote: 'C',
+		oscillatorType: 'sawtooth',
+		showChordNames: true,
+		showRomanNumerals: true,
+		showRootHighlight: true,
+		showTriangles: true,
+		showNoteLabels: true,
+		showLegend: true,
+		showOnlyKeyTriangles: false,
+		showMajorTriangles: true,
+		showMinorTriangles: true
+	};
+
+	// Component references
+	let tonnetzComponent: Tonnetz;
+
+	// Event handlers for controls
+	const handleRegenerate = () => {
+		if (tonnetzComponent) {
+			tonnetzComponent.regenerate();
+		}
+	};
+
+	const handleZoomChange = () => {
+		if (tonnetzComponent) {
+			tonnetzComponent.applyZoomChange();
+		}
+	};
+
+	const handleOscillatorChange = () => {
+		if (tonnetzComponent) {
+			tonnetzComponent.updateOscillatorType();
+		}
+	};
 </script>
 
 <svelte:head>
@@ -102,16 +144,19 @@
 	</ul>
 </div>
 
-<!-- Interactive Tonnetz Component -->
-<Tonnetz
-	width={800}
-	height={600}
-	initialOctaves={2}
-	initialBaseOctave={4}
-	initialGridRadius={3}
-	initialZoom={1.0}
-	initialOscillatorType="sawtooth"
-	showControls={true}
+<!-- Interactive Tonnetz Component with Controls -->
+<TonnetzControls 
+	bind:controls 
+	on:regenerate={handleRegenerate}
+	on:zoomChange={handleZoomChange}
+	on:oscillatorChange={handleOscillatorChange}
+/>
+
+<Tonnetz 
+	bind:this={tonnetzComponent}
+	{controls}
+	width={800} 
+	height={600} 
 />
 
 <style>
