@@ -76,7 +76,12 @@
 		/>
 	</div>
 
-	<Tonnetz bind:this={tonnetzComponent} {controls} height={600} />
+	<Tonnetz
+		bind:this={tonnetzComponent}
+		width={800}
+		height={600}
+		{controls}
+	/>
 </div>
 
 <style>

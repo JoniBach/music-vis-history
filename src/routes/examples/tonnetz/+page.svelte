@@ -160,7 +160,12 @@
 	on:oscillatorChange={handleOscillatorChange}
 />
 
-<Tonnetz bind:this={tonnetzComponent} {controls} height={600} />
+<Tonnetz
+	width={800}
+	height={600}
+	{controls}
+	bind:this={tonnetzComponent}
+/>
 
 <style>
 	/* Page-specific styles - component handles its own styling */
