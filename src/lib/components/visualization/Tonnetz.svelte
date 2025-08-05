@@ -87,6 +87,8 @@
 	let isDragging = false;
 	let currentlyPlayingElements = new Set<string>();
 	let currentlyPlayingNotes = new Set<string>(); // Track which note frequencies are currently playing
+	let clickedTriangles = new Set<string>(); // Track which triangles have been clicked
+	let clickedEdges = new Set<string>(); // Track which edges have been clicked
 
 	// Reactive statements to update internal state when controls change
 	$: numOctaves = controls.numOctaves;
@@ -118,7 +120,10 @@
 		chordFontSize: '10px',
 		majorTriangleColor: '#4a90e2',
 		minorTriangleColor: '#e24a4a',
-		triangleOpacity: 0.6,
+		triangleOpacity: 0.3, // Default opacity for unclicked triangles
+		triangleClickedOpacity: 0.7, // Opacity for clicked triangles
+		edgeOpacity: 0.3, // Default opacity for edges
+		edgeClickedOpacity: 1.0, // Opacity for edges of clicked triangles
 		noteColor: '#ffffff',
 		noteStrokeColor: '#333',
 		chordTextColor: '#ffffff',
@@ -792,27 +797,49 @@
 				.attr('fill', (d) =>
 					d.type === 'major' ? VISUAL_CONFIG.majorTriangleColor : VISUAL_CONFIG.minorTriangleColor
 				)
-				.attr('opacity', VISUAL_CONFIG.triangleOpacity)
+				.attr('opacity', (d) => 
+					clickedTriangles.has(d.id) ? VISUAL_CONFIG.triangleClickedOpacity : VISUAL_CONFIG.triangleOpacity
+				)
 				.attr('stroke', '#333')
 				.attr('stroke-width', 1)
 				.attr('cursor', 'pointer')
 				.on('mouseover', function (event, d) {
 					if (isDragging) {
+						// Add to clicked state when dragging over triangles (don't toggle)
+						if (!clickedTriangles.has(d.id)) {
+							clickedTriangles.add(d.id);
+							// Update opacity immediately
+							d3.select(this).attr('opacity', VISUAL_CONFIG.triangleClickedOpacity);
+						}
+						
 						const frequencies = d.notes
 							.map((note) => points.find((p) => p.note === note)?.frequency)
 							.filter(Boolean) as number[];
 						handleElementPlay(`triangle-${d.points.join('-')}`, frequencies);
+					} else {
+						// On hover, show slightly higher opacity but respect clicked state
+						const currentOpacity = clickedTriangles.has(d.id) ? VISUAL_CONFIG.triangleClickedOpacity : VISUAL_CONFIG.triangleOpacity;
+						d3.select(this).attr('opacity', Math.min(currentOpacity + 0.2, 1.0));
 					}
-					d3.select(this).attr('opacity', 0.8);
 				})
 				.on('mouseout', function (event, d) {
 					if (isDragging) handleElementStop(`triangle-${d.points.join('-')}`);
-					d3.select(this).attr('opacity', VISUAL_CONFIG.triangleOpacity);
+					// Restore original opacity based on clicked state
+					const originalOpacity = clickedTriangles.has(d.id) ? VISUAL_CONFIG.triangleClickedOpacity : VISUAL_CONFIG.triangleOpacity;
+					d3.select(this).attr('opacity', originalOpacity);
 				})
 				.on('mousedown', function (event, d) {
 					event.preventDefault();
 					stopAllNotes();
 					isDragging = true;
+					
+					// Add to clicked state on mousedown (don't toggle - stay highlighted once selected)
+					if (!clickedTriangles.has(d.id)) {
+						clickedTriangles.add(d.id);
+						// Update opacity immediately
+						d3.select(this).attr('opacity', VISUAL_CONFIG.triangleClickedOpacity);
+					}
+					
 					const frequencies = d.notes
 						.map((note) => points.find((p) => p.note === note)?.frequency)
 						.filter(Boolean) as number[];
@@ -846,15 +873,32 @@
 				.attr('y2', (d) => points.find((p) => p.id === d.point2)!.y)
 				.attr('stroke', VISUAL_CONFIG.edgeColor)
 				.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth)
+				.attr('opacity', (d) => 
+					clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity
+				)
 				.attr('cursor', 'pointer')
 				.on('mouseover', function (event, d) {
 					if (isDragging) {
+						// Toggle clicked state when dragging over edges
+						if (clickedEdges.has(d.id)) {
+							clickedEdges.delete(d.id);
+						} else {
+							clickedEdges.add(d.id);
+						}
+						// Update opacity immediately
+						const newOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+						d3.select(this).attr('opacity', newOpacity);
+						
 						const point1 = points.find((p) => p.id === d.point1);
 						const point2 = points.find((p) => p.id === d.point2);
 						if (point1 && point2) {
 							const frequencies = [point1.frequency, point2.frequency];
 							handleElementPlay(`edge-${d.id}`, frequencies);
 						}
+					} else {
+						// On hover, show slightly higher opacity but respect clicked state
+						const currentOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+						d3.select(this).attr('opacity', Math.min(currentOpacity + 0.2, 1.0));
 					}
 					d3.select(this)
 						.attr('stroke', VISUAL_CONFIG.edgeHoverColor)
@@ -862,14 +906,28 @@
 				})
 				.on('mouseout', function (event, d) {
 					if (isDragging) handleElementStop(`edge-${d.id}`);
+					// Restore original opacity based on clicked state
+					const originalOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
 					d3.select(this)
 						.attr('stroke', VISUAL_CONFIG.edgeColor)
-						.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth);
+						.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth)
+						.attr('opacity', originalOpacity);
 				})
 				.on('mousedown', function (event, d) {
 					event.preventDefault();
 					stopAllNotes();
 					isDragging = true;
+					
+					// Toggle clicked state on mousedown (works with drag)
+					if (clickedEdges.has(d.id)) {
+						clickedEdges.delete(d.id);
+					} else {
+						clickedEdges.add(d.id);
+					}
+					// Update opacity immediately
+					const newOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+					d3.select(this).attr('opacity', newOpacity);
+					
 					const point1 = points.find((p) => p.id === d.point1);
 					const point2 = points.find((p) => p.id === d.point2);
 					if (point1 && point2) {
