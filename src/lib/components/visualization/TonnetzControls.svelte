@@ -20,6 +20,7 @@
 		showUniqueTriadsOnly: boolean;
 		showUniqueNotesOnly: boolean;
 		hideOrphanNotes: boolean;
+		hideFilteredElements: boolean;
 	}
 </script>
 
@@ -313,6 +314,18 @@
 				on:change={handleRegenerate}
 			/>
 			Hide Orphan Notes
+		</label>
+	</div>
+	
+	<div class="control-group">
+		<label for="hideFilteredElements">
+			<input
+				id="hideFilteredElements"
+				type="checkbox"
+				bind:checked={controls.hideFilteredElements}
+				on:change={handleRegenerate}
+			/>
+			Hide Filtered Elements
 		</label>
 	</div>
 </div>

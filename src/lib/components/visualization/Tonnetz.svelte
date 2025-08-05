@@ -20,6 +20,7 @@
 		showUniqueTriadsOnly: boolean;
 		showUniqueNotesOnly: boolean;
 		hideOrphanNotes: boolean;
+		hideFilteredElements: boolean;
 	}
 </script>
 
@@ -55,9 +56,8 @@
 
 	type HexPosition = { q: number; r: number };
 
-	// Component props
-	export let width = 800;
-	export let height = 600;
+	// Component props - dynamic sizing
+	export let height = 600; // Keep height as a prop for aspect ratio control
 	export let controls: TonnetzControlsData = {
 		numOctaves: 2,
 		baseOctave: 4,
@@ -78,17 +78,23 @@
 		triadFilter: [],
 		showUniqueTriadsOnly: false,
 		showUniqueNotesOnly: false,
-		hideOrphanNotes: false
+		hideOrphanNotes: false,
+		hideFilteredElements: true
 	};
 
 	// State
 	let svgElement: SVGSVGElement;
+	let containerElement: HTMLDivElement;
 	let polySynth: Tone.PolySynth;
 	let isDragging = false;
 	let currentlyPlayingElements = new Set<string>();
 	let currentlyPlayingNotes = new Set<string>(); // Track which note frequencies are currently playing
 	let clickedTriangles = new Set<string>(); // Track which triangles have been clicked
 	let clickedEdges = new Set<string>(); // Track which edges have been clicked
+
+	// Dynamic dimensions
+	let width = 800; // Default fallback
+	let containerWidth = 0;
 
 	// Reactive statements to update internal state when controls change
 	$: numOctaves = controls.numOctaves;
@@ -111,6 +117,7 @@
 	$: showUniqueTriadsOnly = controls?.showUniqueTriadsOnly || false;
 	$: showUniqueNotesOnly = controls?.showUniqueNotesOnly || false;
 	$: hideOrphanNotes = controls?.hideOrphanNotes || false;
+	$: hideFilteredElements = controls?.hideFilteredElements ?? true;
 
 	// Visual configuration
 	const VISUAL_CONFIG = {
@@ -130,7 +137,12 @@
 		startingNoteColor: '#ffeb3b', // Yellow for starting note
 		edgeStrokeWidth: 4,
 		edgeColor: '#666',
-		edgeHoverColor: '#333'
+		edgeHoverColor: '#333',
+		// Filtered-out element styling
+		filteredTriangleColor: '#cccccc', // Grey color for filtered triangles
+		filteredTriangleOpacity: 0.15, // Lower opacity for filtered triangles
+		filteredNoteColor: '#dddddd', // Grey color for filtered notes
+		filteredNoteStrokeColor: '#999' // Grey stroke for filtered notes
 	} as const;
 
 	// Constants
@@ -518,7 +530,7 @@
 		try {
 			polySynth.releaseAll();
 			currentlyPlayingElements.clear();
-			
+
 			// Unhighlight all notes
 			const { points } = generateTonnetzData();
 			unhighlightAllNotes(points);
@@ -530,11 +542,11 @@
 	// Note highlighting functions
 	const highlightPlayingNotes = (frequencies: number[], points: Point[]) => {
 		if (!svgElement) return;
-		
-		frequencies.forEach(frequency => {
+
+		frequencies.forEach((frequency) => {
 			// Find ALL points with matching frequency (there might be multiple instances)
-			const matchingPoints = points.filter(p => p.frequency === frequency);
-			matchingPoints.forEach(point => {
+			const matchingPoints = points.filter((p) => p.frequency === frequency);
+			matchingPoints.forEach((point) => {
 				currentlyPlayingNotes.add(point.id);
 				const noteElement = d3.select(svgElement).select(`circle[data-note-id="${point.id}"]`);
 				if (!noteElement.empty()) {
@@ -548,9 +560,9 @@
 
 	const unhighlightAllNotes = (points: Point[]) => {
 		if (!svgElement) return;
-		
-		currentlyPlayingNotes.forEach(noteId => {
-			const point = points.find(p => p.id === noteId);
+
+		currentlyPlayingNotes.forEach((noteId) => {
+			const point = points.find((p) => p.id === noteId);
 			if (point) {
 				const noteElement = d3.select(svgElement).select(`circle[data-note-id="${noteId}"]`);
 				if (!noteElement.empty()) {
@@ -560,9 +572,7 @@
 						showRootHighlight,
 						VISUAL_CONFIG
 					);
-					noteElement
-						.attr('fill', originalColor)
-						.attr('r', VISUAL_CONFIG.noteRadius);
+					noteElement.attr('fill', originalColor).attr('r', VISUAL_CONFIG.noteRadius);
 				}
 			}
 		});
@@ -579,7 +589,7 @@
 		if (!currentlyPlayingElements.has(elementId)) {
 			currentlyPlayingElements.add(elementId);
 			startChord(frequencies);
-			
+
 			// Highlight the notes being played
 			const { points } = generateTonnetzData();
 			highlightPlayingNotes(frequencies, points);
@@ -723,17 +733,17 @@
 			// If no triangles are visible, show all notes
 			return points;
 		}
-		
+
 		// Create a set of all point IDs that are connected to visible triangles
 		const connectedPointIds = new Set<string>();
-		visibleTriangles.forEach(triangle => {
-			triangle.points.forEach(pointId => {
+		visibleTriangles.forEach((triangle) => {
+			triangle.points.forEach((pointId) => {
 				connectedPointIds.add(pointId);
 			});
 		});
-		
+
 		// Only keep points that are connected to at least one visible triangle
-		return points.filter(point => connectedPointIds.has(point.id));
+		return points.filter((point) => connectedPointIds.has(point.id));
 	};
 
 	const filterTriangles = (
@@ -776,34 +786,59 @@
 			.attr('class', 'main-group')
 			.attr('transform', `translate(${width / 2}, ${height / 2})`);
 
+		// Declare triangle variables at higher scope for use in multiple sections
+		let displayTriangles: Triangle[] = [];
+		let filteredOutTriangles: Triangle[] = [];
+
 		// Draw triangles if enabled
 		if (showTriangles) {
-			const filteredTriangles = filterTriangles(
-				triangles,
-				showOnlyKeyTriangles,
-				showMajorTriangles,
-				showMinorTriangles,
-				triadFilter,
-				startingNote,
-				showUniqueTriadsOnly
-			);
+			
+			if (hideFilteredElements) {
+				// Current behavior: hide filtered-out elements
+				displayTriangles = filterTriangles(
+					triangles,
+					showOnlyKeyTriangles,
+					showMajorTriangles,
+					showMinorTriangles,
+					triadFilter,
+					startingNote,
+					showUniqueTriadsOnly
+				);
+			} else {
+				// New behavior: show all triangles but grey out filtered ones
+				const allFilteredTriangles = filterTriangles(
+					triangles,
+					showOnlyKeyTriangles,
+					showMajorTriangles,
+					showMinorTriangles,
+					triadFilter,
+					startingNote,
+					showUniqueTriadsOnly
+				);
+				const filteredIds = new Set(allFilteredTriangles.map(t => t.id));
+				displayTriangles = allFilteredTriangles;
+				filteredOutTriangles = triangles.filter(t => !filteredIds.has(t.id));
+			}
 
+			// Render visible/active triangles
 			g.selectAll('.triangle')
-				.data(filteredTriangles)
+				.data(displayTriangles)
 				.enter()
 				.append('polygon')
 				.attr('class', 'triangle')
-				.attr('points', (d) => createTrianglePoints(d, points))
-				.attr('fill', (d) =>
+				.attr('points', (d: Triangle) => createTrianglePoints(d, points))
+				.attr('fill', (d: Triangle) =>
 					d.type === 'major' ? VISUAL_CONFIG.majorTriangleColor : VISUAL_CONFIG.minorTriangleColor
 				)
-				.attr('opacity', (d) => 
-					clickedTriangles.has(d.id) ? VISUAL_CONFIG.triangleClickedOpacity : VISUAL_CONFIG.triangleOpacity
+				.attr('opacity', (d: Triangle) =>
+					clickedTriangles.has(d.id)
+						? VISUAL_CONFIG.triangleClickedOpacity
+						: VISUAL_CONFIG.triangleOpacity
 				)
 				.attr('stroke', '#333')
 				.attr('stroke-width', 1)
 				.attr('cursor', 'pointer')
-				.on('mouseover', function (event, d) {
+				.on('mouseover', function (event, d: Triangle) {
 					if (isDragging) {
 						// Add to clicked state when dragging over triangles (don't toggle)
 						if (!clickedTriangles.has(d.id)) {
@@ -811,56 +846,83 @@
 							// Update opacity immediately
 							d3.select(this).attr('opacity', VISUAL_CONFIG.triangleClickedOpacity);
 						}
-						
+
 						const frequencies = d.notes
-							.map((note) => points.find((p) => p.note === note)?.frequency)
+							.map((note: string) => points.find((p) => p.note === note)?.frequency)
 							.filter(Boolean) as number[];
 						handleElementPlay(`triangle-${d.points.join('-')}`, frequencies);
 					} else {
 						// On hover, show slightly higher opacity but respect clicked state
-						const currentOpacity = clickedTriangles.has(d.id) ? VISUAL_CONFIG.triangleClickedOpacity : VISUAL_CONFIG.triangleOpacity;
+						const currentOpacity = clickedTriangles.has(d.id)
+							? VISUAL_CONFIG.triangleClickedOpacity
+							: VISUAL_CONFIG.triangleOpacity;
 						d3.select(this).attr('opacity', Math.min(currentOpacity + 0.2, 1.0));
 					}
 				})
-				.on('mouseout', function (event, d) {
+				.on('mouseout', function (event, d: Triangle) {
 					if (isDragging) handleElementStop(`triangle-${d.points.join('-')}`);
 					// Restore original opacity based on clicked state
-					const originalOpacity = clickedTriangles.has(d.id) ? VISUAL_CONFIG.triangleClickedOpacity : VISUAL_CONFIG.triangleOpacity;
+					const originalOpacity = clickedTriangles.has(d.id)
+						? VISUAL_CONFIG.triangleClickedOpacity
+						: VISUAL_CONFIG.triangleOpacity;
 					d3.select(this).attr('opacity', originalOpacity);
 				})
-				.on('mousedown', function (event, d) {
+				.on('mousedown', function (event, d: Triangle) {
 					event.preventDefault();
 					stopAllNotes();
 					isDragging = true;
-					
+
 					// Add to clicked state on mousedown (don't toggle - stay highlighted once selected)
 					if (!clickedTriangles.has(d.id)) {
 						clickedTriangles.add(d.id);
 						// Update opacity immediately
 						d3.select(this).attr('opacity', VISUAL_CONFIG.triangleClickedOpacity);
 					}
-					
+
 					const frequencies = d.notes
-						.map((note) => points.find((p) => p.note === note)?.frequency)
+						.map((note: string) => points.find((p) => p.note === note)?.frequency)
 						.filter(Boolean) as number[];
 					handleElementPlay(`triangle-${d.points.join('-')}`, frequencies);
 				});
+			
+			// Render filtered-out triangles (greyed out and unclickable) if hideFilteredElements is false
+			if (!hideFilteredElements && filteredOutTriangles.length > 0) {
+				g.selectAll('.triangle-filtered')
+					.data(filteredOutTriangles)
+					.enter()
+					.append('polygon')
+					.attr('class', 'triangle-filtered')
+					.attr('points', (d: Triangle) => createTrianglePoints(d, points))
+					.attr('fill', VISUAL_CONFIG.filteredTriangleColor)
+					.attr('opacity', VISUAL_CONFIG.filteredTriangleOpacity)
+					.attr('stroke', '#999')
+					.attr('stroke-width', 1)
+					.attr('cursor', 'not-allowed')
+					.attr('pointer-events', 'none'); // Make unclickable
+			}
 		}
 
 		// Draw edges (only for visible triangles and if dyads are enabled)
 		if (showTriangles && showDyads) {
-			const filteredTriangles = filterTriangles(
-				triangles,
-				showOnlyKeyTriangles,
-				showMajorTriangles,
-				showMinorTriangles,
-				triadFilter,
-				startingNote,
-				showUniqueTriadsOnly
-			);
+			// Use the same triangle filtering logic as above
+			let edgeTriangles: Triangle[];
+			if (hideFilteredElements) {
+				edgeTriangles = filterTriangles(
+					triangles,
+					showOnlyKeyTriangles,
+					showMajorTriangles,
+					showMinorTriangles,
+					triadFilter,
+					startingNote,
+					showUniqueTriadsOnly
+				);
+			} else {
+				// Show edges for all triangles when not hiding filtered elements
+				edgeTriangles = displayTriangles;
+			}
 
-			// Generate edges only for filtered triangles
-			const filteredEdges = generateEdges(filteredTriangles, new Map(points.map((p) => [p.id, p])));
+			// Generate edges only for the determined triangles
+			const filteredEdges = generateEdges(edgeTriangles, new Map(points.map((p) => [p.id, p])));
 
 			g.selectAll('.edge')
 				.data(filteredEdges)
@@ -873,7 +935,7 @@
 				.attr('y2', (d) => points.find((p) => p.id === d.point2)!.y)
 				.attr('stroke', VISUAL_CONFIG.edgeColor)
 				.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth)
-				.attr('opacity', (d) => 
+				.attr('opacity', (d) =>
 					clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity
 				)
 				.attr('cursor', 'pointer')
@@ -886,9 +948,11 @@
 							clickedEdges.add(d.id);
 						}
 						// Update opacity immediately
-						const newOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+						const newOpacity = clickedEdges.has(d.id)
+							? VISUAL_CONFIG.edgeClickedOpacity
+							: VISUAL_CONFIG.edgeOpacity;
 						d3.select(this).attr('opacity', newOpacity);
-						
+
 						const point1 = points.find((p) => p.id === d.point1);
 						const point2 = points.find((p) => p.id === d.point2);
 						if (point1 && point2) {
@@ -897,7 +961,9 @@
 						}
 					} else {
 						// On hover, show slightly higher opacity but respect clicked state
-						const currentOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+						const currentOpacity = clickedEdges.has(d.id)
+							? VISUAL_CONFIG.edgeClickedOpacity
+							: VISUAL_CONFIG.edgeOpacity;
 						d3.select(this).attr('opacity', Math.min(currentOpacity + 0.2, 1.0));
 					}
 					d3.select(this)
@@ -907,7 +973,9 @@
 				.on('mouseout', function (event, d) {
 					if (isDragging) handleElementStop(`edge-${d.id}`);
 					// Restore original opacity based on clicked state
-					const originalOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+					const originalOpacity = clickedEdges.has(d.id)
+						? VISUAL_CONFIG.edgeClickedOpacity
+						: VISUAL_CONFIG.edgeOpacity;
 					d3.select(this)
 						.attr('stroke', VISUAL_CONFIG.edgeColor)
 						.attr('stroke-width', VISUAL_CONFIG.edgeStrokeWidth)
@@ -917,7 +985,7 @@
 					event.preventDefault();
 					stopAllNotes();
 					isDragging = true;
-					
+
 					// Toggle clicked state on mousedown (works with drag)
 					if (clickedEdges.has(d.id)) {
 						clickedEdges.delete(d.id);
@@ -925,9 +993,11 @@
 						clickedEdges.add(d.id);
 					}
 					// Update opacity immediately
-					const newOpacity = clickedEdges.has(d.id) ? VISUAL_CONFIG.edgeClickedOpacity : VISUAL_CONFIG.edgeOpacity;
+					const newOpacity = clickedEdges.has(d.id)
+						? VISUAL_CONFIG.edgeClickedOpacity
+						: VISUAL_CONFIG.edgeOpacity;
 					d3.select(this).attr('opacity', newOpacity);
-					
+
 					const point1 = points.find((p) => p.id === d.point1);
 					const point2 = points.find((p) => p.id === d.point2);
 					if (point1 && point2) {
@@ -940,7 +1010,7 @@
 				});
 		}
 		// Filter triangles for chord/Roman numeral display
-		const displayTriangles = filterTriangles(
+		const chordDisplayTriangles = filterTriangles(
 			triangles,
 			showOnlyKeyTriangles,
 			showMajorTriangles,
@@ -955,7 +1025,7 @@
 			const chordYOffset = showRomanNumerals ? -6 : 0;
 
 			g.selectAll('.chord-label')
-				.data(displayTriangles)
+				.data(chordDisplayTriangles)
 				.enter()
 				.append('text')
 				.attr('class', 'chord-label')
@@ -976,7 +1046,7 @@
 			const romanYOffset = showChordNames ? 6 : 0;
 
 			g.selectAll('.roman-label')
-				.data(displayTriangles)
+				.data(chordDisplayTriangles)
 				.enter()
 				.append('text')
 				.attr('class', 'roman-label')
@@ -994,7 +1064,7 @@
 
 		// Draw notes
 		let displayPoints = points;
-		
+
 		// Apply orphan notes filter if enabled (must be done before unique notes filter)
 		if (hideOrphanNotes) {
 			// Get the filtered triangles to determine which notes are connected
@@ -1009,12 +1079,12 @@
 			);
 			displayPoints = filterOrphanNotes(displayPoints, visibleTriangles);
 		}
-		
+
 		// Apply unique notes filter if enabled
 		if (showUniqueNotesOnly) {
 			displayPoints = filterUniqueNotes(displayPoints);
 		}
-		
+
 		const noteGroups = g
 			.selectAll('.note-group')
 			.data(displayPoints)
@@ -1078,7 +1148,7 @@
 			const legend = svg
 				.append('g')
 				.attr('class', 'legend')
-				.attr('transform', `translate(${width - 150}, 20)`);
+				.attr('transform', `translate(${Math.max(width - 150, 20)}, 20)`);
 
 			const legendData = createLegendData(VISUAL_CONFIG);
 
@@ -1183,11 +1253,33 @@
 		}
 	};
 
+	// Resize observer for dynamic width
+	let resizeObserver: ResizeObserver;
+
 	onMount(() => {
 		polySynth = new Tone.PolySynth(
 			Tone.FMSynth,
 			createPolySynthConfig(oscillatorType)
 		).toDestination();
+
+		// Initial size calculation
+		if (containerElement) {
+			width = containerElement.clientWidth || 800;
+		}
+
+		// Set up resize observer
+		if (containerElement) {
+			resizeObserver = new ResizeObserver(() => {
+				if (containerElement) {
+					const newWidth = containerElement.clientWidth;
+					if (newWidth !== width && newWidth > 0) {
+						width = newWidth;
+						regenerateTonnetz();
+					}
+				}
+			});
+			resizeObserver.observe(containerElement);
+		}
 
 		createTonnetz();
 
@@ -1199,18 +1291,31 @@
 		};
 
 		document.addEventListener('mouseup', handleGlobalMouseUp);
-		return () => document.removeEventListener('mouseup', handleGlobalMouseUp);
+		return () => {
+			document.removeEventListener('mouseup', handleGlobalMouseUp);
+			if (resizeObserver) {
+				resizeObserver.disconnect();
+			}
+		};
 	});
 </script>
 
-<div class="tonnetz-container">
+<div class="tonnetz-container" bind:this={containerElement}>
 	<svg bind:this={svgElement}></svg>
 </div>
 
 <style>
 	.tonnetz-container {
+		width: 100%;
+		height: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		min-width: 400px; /* Minimum width for usability */
+	}
+
+	.tonnetz-container svg {
+		max-width: 100%;
+		height: auto;
 	}
 </style>

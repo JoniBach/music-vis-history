@@ -25,7 +25,8 @@
 		triadFilter: [],
 		showUniqueTriadsOnly: true,
 		showUniqueNotesOnly: false,
-		hideOrphanNotes: true
+		hideOrphanNotes: true,
+		hideFilteredElements: true
 	};
 
 	// Component references
@@ -159,7 +160,7 @@
 	on:oscillatorChange={handleOscillatorChange}
 />
 
-<Tonnetz bind:this={tonnetzComponent} {controls} width={800} height={600} />
+<Tonnetz bind:this={tonnetzComponent} {controls} height={600} />
 
 <style>
 	/* Page-specific styles - component handles its own styling */
